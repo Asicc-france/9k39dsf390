@@ -2,7 +2,7 @@
 import Base from '../../layouts/Base.astro';
 import PageHero from '../../components/PageHero.astro';
 import { langPaths, L, type Lang } from '../../i18n/ui';
-import { EVENTS } from '../../data/site';
+import { EVENTS, ANNUAL } from '../../data/site';
 
 export const getStaticPaths = langPaths;
 const lang = Astro.params.lang as Lang;
@@ -20,8 +20,8 @@ for (const e of [...EVENTS].sort((a, b) => a.date.localeCompare(b.date))) {
 ---
 <Base lang={lang} rest="events/" title={L(lang, { ko: '행사 일정', fr: 'Agenda' })}>
   <PageHero lang={lang} eyebrow={L(lang, { ko: '행사', fr: 'Agenda' })}
-    title={L(lang, { ko: '행사 일정', fr: 'Les prochains rendez-vous' })}
-    intro={L(lang, { ko: '학교 행사, 협회 일정, 입학 관련 일정을 한곳에 모았습니다. 캘린더를 구독하면 휴대전화 달력에 자동으로 반영됩니다.', fr: 'Événements des écoles, de l’association et des admissions. Abonnez-vous au calendrier pour le retrouver sur votre téléphone.' })}>
+    title={L(lang, { ko: '학사·협회 주요 일정', fr: 'Calendrier de l’année' })}
+    intro={L(lang, { ko: '입학 일정, 협회 공식 일정, 학교 행사를 한곳에 모았습니다. "예상"으로 표시된 날짜는 지난 학년도 기준이며, 공고가 나오면 갱신합니다.', fr: 'Événements des écoles, de l’association et des admissions. Abonnez-vous au calendrier pour le retrouver sur votre téléphone.' })}>
     <div class="row gap-12" style="margin-top:8px">
       <a class="btn btn-accent" href="#" data-placeholder>{L(lang, { ko: '구글 캘린더 구독', fr: 'S’abonner (Google Agenda)' })}</a>
       <a class="btn btn-light" href="#" data-placeholder>{L(lang, { ko: 'iCal 주소 복사', fr: 'Copier le lien iCal' })}</a>
@@ -47,6 +47,13 @@ for (const e of [...EVENTS].sort((a, b) => a.date.localeCompare(b.date))) {
         })}
       </>
     ))}
-    <p class="notice notice-info" style="margin-top:32px">{L(lang, { ko: '일정은 협회 구글 캘린더 한 곳에서 관리하고, 이 페이지는 그 캘린더를 보여 주는 방식으로 운영할 수 있습니다 (운영 안내서 참고).', fr: 'L’agenda peut être tenu dans un seul Google Agenda de l’association, affiché sur cette page.' })}</p>
+    <h2 class="h2" style="margin-top:56px">{L(lang, { ko: '연간 일정', fr: 'L’année en un coup d’œil' })}</h2>
+    <p class="muted" style="margin:8px 0 20px">{L(lang, { ko: '해마다 비슷한 시기에 반복되는 학교와 협회의 주요 일정입니다.', fr: 'Rendez-vous qui reviennent chaque année à des périodes proches.' })}</p>
+    <div class="table-wrap" id="events-annual">
+      <table>
+        <thead><tr><th style="width:28%">{L(lang, { ko: '시기', fr: 'Période' })}</th><th>{L(lang, { ko: '일정', fr: 'Rendez-vous' })}</th></tr></thead>
+        <tbody>{ANNUAL.map((a) => <tr><td><b>{L(lang, a.when)}</b></td><td>{a.items.map((i) => <div>{L(lang, i)}</div>)}</td></tr>)}</tbody>
+      </table>
+    </div>
   </section>
 </Base>

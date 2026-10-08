@@ -3,6 +3,7 @@
 import '@fontsource/gowun-batang/400.css';
 import '@fontsource/gowun-batang/700.css';
 import '@fontsource/gowun-dodum/400.css';
+import '@fontsource/ibm-plex-sans-kr/400.css';
 import '@fontsource/ibm-plex-sans-kr/500.css';
 import '@fontsource/ibm-plex-sans-kr/600.css';
 import '@fontsource/ibm-plex-sans-kr/700.css';
@@ -59,7 +60,16 @@ const current = (p: string) => rest.startsWith(p);
         <span class="brand-txt"><b>ASICC</b><small>{t(lang, 'site.short')}</small></span>
       </a>
       <nav class="nav" id="nav" aria-label={lang === 'ko' ? '주 메뉴' : 'Menu principal'}>
-        {NAV.map((n) => (
+        {NAV.map((n) => n.children ? (
+          <div class="nav-item has-sub">
+            <a href={href(lang, n.path)} aria-current={current(n.path) ? 'page' : undefined} aria-haspopup="true">{t(lang, n.key)}
+              <svg class="caret" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+            </a>
+            <div class="sub">
+              {n.children.map((c) => <a href={href(lang, c.path)}>{c.label[lang]}</a>)}
+            </div>
+          </div>
+        ) : (
           <a href={href(lang, n.path)} aria-current={current(n.path) ? 'page' : undefined}>{t(lang, n.key)}</a>
         ))}
       </nav>
@@ -91,14 +101,15 @@ const current = (p: string) => rest.startsWith(p);
         <h2>{lang === 'ko' ? '사이트' : 'Le site'}</h2>
         <ul>
           {NAV.map((n) => <li><a href={href(lang, n.path)}>{t(lang, n.key)}</a></li>)}
+          <li><a href={href(lang, 'section/guide/')}>{lang === 'ko' ? '학교생활 가이드' : 'Guide de la vie scolaire'}</a></li>
         </ul>
       </nav>
       <div>
-        <h2>{lang === 'ko' ? '회원과 참여' : 'Membres'}</h2>
+        <h2>{lang === 'ko' ? '회원' : 'Membres'}</h2>
         <ul>
           <li><a href={href(lang, 'membres/')}>{t(lang, 'nav.members')}</a></li>
           <li><a href={href(lang, 'membres/signup/')}>{lang === 'ko' ? '회원 가입' : 'Créer un compte'}</a></li>
-          <li><a href={href(lang, 'join/#newsletter')}>{t(lang, 'footer.subscribe')}</a></li>
+          <li><a href={href(lang, 'contact/#newsletter')}>{t(lang, 'footer.subscribe')}</a></li>
           <li><a href={href(lang, 'about/#statuts')}>{t(lang, 'footer.statuts')}</a></li>
         </ul>
       </div>

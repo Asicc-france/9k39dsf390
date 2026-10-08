@@ -1,56 +1,140 @@
 ---
 import Base from '../../../layouts/Base.astro';
 import PageHero from '../../../components/PageHero.astro';
-import Sources from '../../../components/Sources.astro';
 import { langPaths, href, L, type Lang } from '../../../i18n/ui';
 import { LEVELS } from '../../../data/site';
 
 export const getStaticPaths = langPaths;
 const lang = Astro.params.lang as Lang;
+const toc = [
+  ['overview', { ko: '한국어 국제섹션 개요', fr: 'Présentation' }],
+  ['system', { ko: '프랑스 학제와 국제섹션', fr: 'Système scolaire et SI' }],
+  ['integration', { ko: '정규 과정 안에서의 운영', fr: 'Intégration au cursus' }],
+  ['schools', { ko: '세 학교 안내', fr: 'Les trois établissements' }],
+  ['diplomas', { ko: '평가와 학위', fr: 'Évaluation et diplômes' }],
+  ['organisation', { ko: '교사와 운영 체계', fr: 'Enseignants et pilotage' }],
+  ['guide', { ko: '학교생활 가이드', fr: 'Guide de la vie scolaire' }],
+] as const;
+const CYCLES = [
+  { c: { ko: '1단계 (cycle 1)', fr: 'Cycle 1' }, n: { ko: '첫 배움', fr: 'Apprentissages premiers' }, g: 'PS · MS · GS', age: '3–5', si: { ko: '유치원 섹션 (Théophile Gautier) · 주 3시간', fr: 'SI maternelle (Théophile Gautier), 3 h' }, on: true },
+  { c: { ko: '2단계 (cycle 2)', fr: 'Cycle 2' }, n: { ko: '기초 학습', fr: 'Apprentissages fondamentaux' }, g: 'CP · CE1 · CE2', age: '6–8', si: { ko: '초등 섹션 (Armand Silvestre) · 주 3시간: 문학, 음악, 세계 탐구', fr: 'SI élémentaire (Armand Silvestre), 3 h : littérature, musique, questionner le monde' }, on: true },
+  { c: { ko: '3단계 (cycle 3)', fr: 'Cycle 3' }, n: { ko: '다지기', fr: 'Consolidation' }, g: 'CM1 · CM2 · 6e', age: '9–11', si: { ko: 'CM1·CM2: 초등 섹션 (문학, 음악, 역사·지리) / 6e: 중학 섹션 (Les Bruyères)', fr: 'CM1–CM2 : littérature, musique, histoire-géographie ; 6e : collège Les Bruyères' }, on: true },
+  { c: { ko: '4단계 (cycle 4)', fr: 'Cycle 4' }, n: { ko: '심화', fr: 'Approfondissements' }, g: '5e · 4e · 3e', age: '12–14', si: { ko: '중학 섹션 (Les Bruyères) · 3e 말 DNB 국제 옵션', fr: 'Collège Les Bruyères ; DNB option internationale en fin de 3e' }, on: true },
+  { c: { ko: '고등학교', fr: 'Lycée' }, n: { ko: '바칼로레아 준비', fr: 'Vers le baccalauréat' }, g: '2nde · 1re · Terminale', age: '15–17', si: { ko: '한국어 섹션은 현재 중학교까지 운영', fr: 'Section coréenne actuellement ouverte jusqu’au collège' }, on: false },
+];
 ---
 <Base lang={lang} rest="section/" title={L(lang, { ko: '국제섹션 안내', fr: 'La section internationale' })}>
-  <PageHero lang={lang} eyebrow={L(lang, { ko: '국제섹션 안내', fr: 'La section' })}
-    title={L(lang, { ko: '프랑스 공립학교 안의 한국어 과정', fr: 'Un cursus en coréen dans l’école publique' })}
-    intro={L(lang, { ko: '국제섹션은 한국과 프랑스 교육부의 협약으로 2017년 9월 문을 열었습니다. 학생들은 프랑스 정규 교육과정을 모두 따르면서, 일부 교과를 한국어로 배웁니다. 한국 학생에게는 깊이 있는 프랑스어 교육을, 프랑스 학생에게는 한국어와 한국 문화를 익힐 기회를 주어 두 나라 대학 진학을 함께 준비하도록 돕는 것이 목표입니다.', fr: 'Ouverte en septembre 2017 dans le cadre d’un accord entre les ministères français et coréen, la section permet de suivre l’intégralité du programme français tout en recevant une partie des enseignements en coréen, avec pour horizon le bilinguisme et l’accès aux études supérieures dans les deux pays.' })} />
+  <PageHero lang={lang} eyebrow={L(lang, { ko: '국제섹션', fr: 'La section' })}
+    title={L(lang, { ko: '프랑스 공립학교 안의 한국어 이중언어 과정', fr: 'Un cursus bilingue franco-coréen dans l’école publique' })}
+    intro={L(lang, { ko: '쿠르브부아 한국어 국제섹션의 운영 방식, 프랑스 학제 속에서의 위치, 세 학교의 교육 내용을 정리했습니다.', fr: 'Fonctionnement de la section, place dans le système scolaire français et contenus d’enseignement dans les trois établissements.' })} />
 
-  <section class="wrap sec stack" style="gap:28px">
-    {LEVELS.map((lv) => (
-      <article id={lv.id} class="card" style="overflow:hidden;scroll-margin-top:96px">
-        <div class="split" style="gap:0">
-          <div class="ph" style={`background:${lv.tint};color:${lv.ink};flex:1 1 280px;min-height:220px`}>{L(lang, { ko: `[${lv.name.ko} 사진]`, fr: `[Photo ${lv.name.fr.toLowerCase()}]` })}</div>
-          <div class="stack gap-12" style="flex:999 1 480px;padding:28px 32px">
-            <span class="eyebrow">{lv.code}</span>
-            <h2 class="h2">{L(lang, lv.name)}</h2>
-            <p class="lead" style="font-size:16px">{L(lang, lv.desc)}</p>
-            <div class="card card-pad small" style="background:var(--bg);border:0;padding:16px 18px">
-              <div class="kv"><span class="muted">{L(lang, { ko: '학교', fr: 'Établissement' })}</span><b>{lv.school}</b></div>
-              <div class="kv"><span class="muted">{L(lang, { ko: '주소', fr: 'Adresse' })}</span><span>{lv.address}</span></div>
-              <div class="kv"><span class="muted">{L(lang, { ko: '한국어 수업', fr: 'Horaire en coréen' })}</span><span>{L(lang, lv.hours)}</span></div>
+  <div class="wrap sec with-aside">
+    <aside><nav class="toc" aria-label={L(lang, { ko: '목차', fr: 'Sommaire' })}>{toc.map(([id, l]) => <a href={id === 'guide' ? href(lang, 'section/guide/') : `#${id}`}>{L(lang, l)}</a>)}</nav></aside>
+    <div class="content stack" style="gap:72px">
+
+      <section id="overview" class="doc-section">
+        <h2 class="h2">{L(lang, toc[0][1])}</h2>
+        <p>{L(lang, {
+          ko: '국제섹션(section internationale)은 프랑스 국민교육부가 협력국과 맺은 협약에 따라 프랑스 공립학교 안에 설치하는 이중언어·이중문화 과정입니다. 협력국의 언어만이 아니라 그 나라의 문화와 교수법까지 프랑스 교육 체계 안으로 들여온다는 점이 특징입니다. 프랑스 교육법(Code de l’éducation D.421-132)은 국제섹션의 목적을 외국 학생의 프랑스 학교 적응을 돕고, 프랑스 학생이 외국어를 일부 교과와 함께 깊이 익히도록 하는 데 둡니다.',
+          fr: 'Les sections internationales sont des dispositifs bilingues et biculturels créés dans les établissements publics français, sur la base d’accords bilatéraux. Elles intègrent au système français un enseignement relevant de la langue, de la culture et des méthodes pédagogiques du pays partenaire. Selon l’article D.421-132 du code de l’éducation, elles facilitent l’accueil des élèves étrangers et la pratique approfondie d’une langue étrangère par les élèves français.' })}</p>
+        <p>{L(lang, {
+          ko: '현재 프랑스에는 18개 언어의 국제섹션이 있으며, 한국어는 그중 하나입니다. 쿠르브부아에는 독일어, 미국 영어, 영국 영어, 아랍어, 중국어, 한국어, 일본어의 7개 언어 섹션이 있습니다. 한국어 섹션은 2017년 9월, 한·불 수교 130주년을 계기로 양국 교육부의 협약에 따라 쿠르브부아와 스트라스부르(Collège Vauban)에 함께 개설되었습니다.',
+          fr: 'Les sections internationales existent aujourd’hui en 18 langues, dont le coréen. Courbevoie en accueille sept : allemand, anglais américain, anglais britannique, arabe, chinois, coréen et japonais. La section coréenne a ouvert en septembre 2017, à Courbevoie et au collège Vauban de Strasbourg, dans le cadre de l’accord conclu à l’occasion des 130 ans des relations franco-coréennes.' })}</p>
+        <div class="callout">{L(lang, {
+          ko: '국제섹션은 프랑스 공립학교의 정규 과정이므로 수업료가 없습니다. 학생은 일반 학생과 같은 프랑스 교육과정을 모두 이수하고, 그 위에 한국어로 진행되는 수업을 함께 듣습니다.',
+          fr: 'La section fait partie de l’enseignement public et est gratuite. Les élèves suivent l’intégralité du programme français, complété par des enseignements dispensés en coréen.' })}</div>
+      </section>
+
+      <section id="system" class="doc-section">
+        <h2 class="h2">{L(lang, toc[1][1])}</h2>
+        <p>{L(lang, {
+          ko: '프랑스에서는 만 3세부터 교육이 의무이며, 학교 교육은 학습 단계(cycle)로 나뉩니다. 유치원(école maternelle)과 초등학교(école élémentaire)는 주 24시간 수업을 하고, 중학교(collège) 4년을 마치면 국가 중학 졸업 시험(DNB)을 봅니다. 고등학교(lycée) 3년 뒤에는 바칼로레아(baccalauréat)를 치릅니다. 아래 표는 각 단계에서 한국어 국제섹션이 어떻게 이어지는지 보여 줍니다.',
+          fr: 'L’instruction est obligatoire dès 3 ans et la scolarité est organisée en cycles. Maternelle et élémentaire comptent 24 heures hebdomadaires ; le collège se conclut par le diplôme national du brevet (DNB), le lycée par le baccalauréat. Le tableau situe la section coréenne à chaque étape.' })}</p>
+        <div class="table-wrap">
+          <table class="cycle-table">
+            <thead><tr><th>{L(lang, { ko: '단계', fr: 'Cycle' })}</th><th>{L(lang, { ko: '학년', fr: 'Classes' })}</th><th>{L(lang, { ko: '나이', fr: 'Âge' })}</th><th>{L(lang, { ko: '한국어 국제섹션', fr: 'Section coréenne' })}</th></tr></thead>
+            <tbody>
+              {CYCLES.map((r) => (
+                <tr class={r.on ? 'si-row' : ''}>
+                  <td><b>{L(lang, r.c)}</b><br><span class="tiny">{L(lang, r.n)}</span></td>
+                  <td>{r.g}</td><td>{r.age}</td><td>{L(lang, r.si)}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        <p class="tiny">{L(lang, { ko: '한국 학년과의 대응은 학교생활 가이드의 학년 대응표를 참고하세요.', fr: 'Correspondances avec le système coréen : voir le guide de la vie scolaire.' })} <a href={href(lang, 'section/guide/#grades')}>{L(lang, { ko: '학년 대응표', fr: 'Tableau' })} →</a></p>
+      </section>
+
+      <section id="integration" class="doc-section">
+        <h2 class="h2">{L(lang, toc[2][1])}</h2>
+        <h3>{L(lang, { ko: '같은 반, 같은 교육과정', fr: 'Même classe, même programme' })}</h3>
+        <p>{L(lang, {
+          ko: '국제섹션 학생은 따로 반을 이루지 않고, 학교의 여러 학급에 나뉘어 배정됩니다. 학생은 담임 교사와 함께 프랑스 정규 수업을 모두 듣고, 정해진 시간에 한국어 섹션 수업에 참여합니다. 유치원과 초등학교에서는 이 시간이 주 24시간 안에 포함되며, 45분씩 4회 또는 1시간씩 3회로 편성하는 것이 원칙입니다.',
+          fr: 'Les élèves de la section sont répartis dans toutes les classes de l’école. Ils suivent l’ensemble des enseignements avec leur classe et rejoignent les cours de section aux horaires prévus ; en maternelle et en élémentaire, ces trois heures sont incluses dans les 24 heures hebdomadaires, idéalement en quatre séances de 45 minutes.' })}</p>
+        <h3>{L(lang, { ko: '언어와 교과를 함께', fr: 'Langue et disciplines' })}</h3>
+        <p>{L(lang, {
+          ko: '섹션 수업은 한국어 자체만 가르치는 시간이 아니라, 정해진 교과를 한국어로 배우는 시간입니다. 유치원에서는 모든 영역에서 언어를 활용하는 활동을, 초등 2단계(CP~CE2)에서는 문학·음악·세계 탐구를, 3단계(CM1~CM2)에서는 문학·음악·역사지리를 한국어로 다룹니다. 중학교에서는 외국 문학 수업이 주 4시간 더해지고, 일부 교과(DNL, 비언어 교과)를 한국어와 프랑스어로 함께 수업합니다.',
+          fr: 'Les cours de section portent sur des domaines disciplinaires : langage en maternelle ; littérature, musique et questionner le monde en cycle 2 ; littérature, musique et histoire-géographie en cycle 3. Au collège s’ajoutent 4 heures de lettres étrangères et une discipline non linguistique enseignée en partie dans la langue de la section.' })}</p>
+        <h3>{L(lang, { ko: '교사 간 협의와 연속성', fr: 'Concertation et continuité' })}</h3>
+        <p>{L(lang, {
+          ko: '섹션 교사와 학급 담임 교사는 수업 내용을 함께 협의해 섹션 수업이 학교 전체 교육과 이어지도록 합니다. 초등학교 섹션 교사와 중학교 섹션 교사 사이의 협의도 권장되어, 학교급이 바뀌어도 배움이 끊기지 않도록 합니다.',
+          fr: 'Un travail de concertation est mené entre le professeur de SI et les autres enseignants, ainsi qu’avec les professeurs de SI du collège, pour assurer la continuité du parcours.' })}</p>
+        <div class="callout jjok">{L(lang, {
+          ko: '쿠르브부아 국제섹션 안내 책자는 주 3시간 수업 밖에서도 아이가 한국어를 꾸준히, 실제 생활 속에서 접해야 한다고 밝힙니다. 가정에서 한국어를 정기적으로 쓰고 한국 문화를 함께 나누는 것이 섹션 수업을 따라가기 위한 전제입니다.',
+          fr: 'Selon la plaquette des SI de Courbevoie, l’enfant doit bénéficier d’une exposition régulière et authentique au coréen hors des trois heures : les familles s’engagent à parler la langue à la maison et à en partager la culture.' })}</div>
+      </section>
+
+      <section id="schools" class="doc-section">
+        <h2 class="h2">{L(lang, toc[3][1])}</h2>
+        <p>{L(lang, { ko: '쿠르브부아 한국어 국제섹션은 세 학교에서 학교급별로 운영됩니다. 유치원과 초등학교는 쿠르브부아 시가 운영하는 공립학교이고, 중학교는 오드센 도(Hauts-de-Seine)가 운영하는 공립 중학교입니다.', fr: 'La section est répartie entre trois établissements publics : une école maternelle et une école élémentaire de la ville de Courbevoie, et un collège du département des Hauts-de-Seine.' })}</p>
+        {LEVELS.map((lv) => (
+          <article id={lv.id} class="card school-card" style="scroll-margin-top:96px">
+            <div class="head">
+              <div class="stack" style="gap:2px"><span class="eyebrow">{lv.code}</span><h3 style="font-family:var(--serif);font-size:22px">{L(lang, lv.name)} · {lv.school}</h3></div>
+              <span class="tiny">{lv.address}</span>
             </div>
-            <ul class="small" style="padding-left:1.2em;color:var(--ink-2);display:grid;gap:4px">
-              {lv.subjects.map((s) => <li>{L(lang, s)}</li>)}
-            </ul>
-          </div>
-        </div>
-      </article>
-    ))}
-    <p class="small muted">{L(lang, { ko: '유치원은 학습 기록장(carnet de suivi), 초등학교는 학생 통합 기록부(livret scolaire unique)로 한국어 학습을 함께 기록합니다. 중학교 과정 시수와 과목은 2019년 언론 보도 기준이므로, 현행 편성은 학교 안내로 확인해 주세요.', fr: 'Le suivi passe par le carnet de suivi (maternelle) et le livret scolaire unique (élémentaire). Les horaires du collège proviennent d’un article de 2019 et restent à confirmer.' })}</p>
-  </section>
+            <div class="body">
+              <div><h4>{L(lang, { ko: '한국어 수업', fr: 'Horaire' })}</h4><p>{L(lang, lv.hours)}</p></div>
+              <div><h4>{L(lang, { ko: '교육 내용', fr: 'Contenus' })}</h4><ul>{lv.subjects.map((s) => <li>{L(lang, s)}</li>)}</ul></div>
+              <div><h4>{L(lang, { ko: '수업 방식', fr: 'Organisation' })}</h4><p>{L(lang, lv.desc)}</p></div>
+              <div><h4>{L(lang, { ko: '입학', fr: 'Admission' })}</h4><p>{L(lang, lv.id === 'col'
+                ? { ko: '초등 CM2 말에 다시 지원합니다. 지원서는 교육청 누리집에 별도로 올라오며, 세부 사항은 학교에 문의합니다.', fr: 'Nouvelle candidature en fin de CM2 ; dossier spécifique sur le site de l’académie.' }
+                : lv.id === 'elem'
+                ? { ko: '유치원 GS 말(CP 진입)에 다시 지원합니다. 유치원 섹션 재학이 입학을 보장하지 않습니다.', fr: 'Nouvelle candidature en fin de GS ; la scolarité en SI maternelle ne garantit pas l’admission.' }
+                : { ko: '교육청 1차 모집(11월~12월 중순 원서 접수)으로 지원합니다.', fr: 'Candidature lors de la campagne de novembre à mi-décembre.' })}</p></div>
+            </div>
+          </article>
+        ))}
+        <a class="link-arrow" href={href(lang, 'admission/')}>{L(lang, { ko: '입학 절차 자세히 보기', fr: 'Procédure d’admission' })}</a>
+      </section>
 
-  <section class="band">
-    <div class="wrap sec split">
-      <div class="side">
-        <span class="eyebrow">{L(lang, { ko: '한국어 국제섹션이 있는 곳', fr: 'Ailleurs en France' })}</span>
-        <h2 class="h2">{L(lang, { ko: '쿠르브부아와 스트라스부르', fr: 'Courbevoie et Strasbourg' })}</h2>
-      </div>
-      <div class="main stack gap-16">
-        <p class="lead" style="font-size:16px">{L(lang, { ko: '프랑스의 한국어 국제섹션은 쿠르브부아(유치원·초등학교·중학교)와 스트라스부르(Collège international Vauban) 두 곳에 있습니다. 두 곳의 교사 인건비는 같은 예산 체계로 운영됩니다.', fr: 'En France, la section coréenne existe à Courbevoie (maternelle, élémentaire, collège) et à Strasbourg (collège international Vauban), financées par un même dispositif.' })}</p>
-        <div class="row gap-12">
-          <a class="btn btn-accent" href={href(lang, 'admission/')}>{L(lang, { ko: '입학 안내', fr: 'Admissions' })}</a>
-          <a class="btn btn-ghost" href={href(lang, 'section/guide/')}>{L(lang, { ko: '프랑스 학교생활 가이드', fr: 'Guide de la vie scolaire' })}</a>
-        </div>
-      </div>
+      <section id="diplomas" class="doc-section">
+        <h2 class="h2">{L(lang, toc[4][1])}</h2>
+        <ul class="bullets">
+          <li>{L(lang, { ko: '유치원: 학습 기록장(carnet de suivi)에 섹션 수업의 진행을 함께 기록합니다.', fr: 'Maternelle : carnet de suivi des apprentissages.' })}</li>
+          <li>{L(lang, { ko: '초등학교: 학생 통합 기록부(livret scolaire unique)에 섹션 수업 평가가 들어갑니다. 2단계를 마치는 CE2 말에는 평가 자료를 바탕으로 3단계 진행 여부를 판단합니다.', fr: 'Élémentaire : livret scolaire unique ; en fin de CE2, les grilles d’évaluation sont étudiées pour la poursuite en cycle 3.' })}</li>
+          <li>{L(lang, { ko: '중학교: 3e 말에 국가 중학 졸업 시험(DNB)을 "국제 옵션"으로 응시할 수 있습니다. 역사·지리와 외국어 두 과목의 특별 시험이 더해지며, 학위에 국제섹션 이수가 표기됩니다.', fr: 'Collège : DNB « option internationale » en fin de 3e, avec deux épreuves spécifiques (histoire-géographie et langue).' })}</li>
+          <li>{L(lang, { ko: '고등학교 단계에서 국제섹션은 2nde에 운영되고, 1re부터는 프랑스 국제 바칼로레아(BFI) 과정으로 이어지는 것이 프랑스의 일반 제도입니다. 한국어 섹션은 현재 중학교 과정까지 운영됩니다.', fr: 'Au lycée, les SI existent en seconde, puis les classes mènent au baccalauréat français international (BFI). La section coréenne est actuellement ouverte jusqu’au collège.' })}</li>
+        </ul>
+      </section>
+
+      <section id="organisation" class="doc-section">
+        <h2 class="h2">{L(lang, toc[5][1])}</h2>
+        <p>{L(lang, {
+          ko: '국제섹션 교육과정은 프랑스 교육 당국과 협력국 당국이 함께 정합니다. 한국어 섹션의 경우 대한민국 교육부가 교사 인건비 예산을 마련하고, 주프랑스 한국교육원이 교사 채용과 급여 지급을 맡습니다. 교사는 프랑스 공립학교에서 수업하므로, 수업과 교육 활동의 관리·감독은 각 학교와 베르사유 교육청이 담당합니다. 입학 여부는 교육청이 주재하는 도 단위 위원회가 결정합니다.',
+          fr: 'Les programmes sont élaborés conjointement par les autorités françaises et coréennes. Le ministère coréen de l’Éducation finance les postes ; le Centre éducatif coréen recrute et rémunère les enseignants. Le pilotage pédagogique relève des établissements et de l’académie de Versailles, et les admissions d’une commission départementale.' })}</p>
+        <p>{L(lang, {
+          ko: '같은 체계 아래 스트라스부르의 Collège international Vauban에도 한국어 국제섹션 중학교 과정이 운영되고 있습니다.',
+          fr: 'Le collège international Vauban de Strasbourg accueille également une section coréenne au collège, dans le même cadre.' })}</p>
+        <a class="link-arrow" href={href(lang, 'about/#structure')}>{L(lang, { ko: '운영 기관과 공식 누리집', fr: 'Institutions et sites officiels' })}</a>
+      </section>
+
+      <section id="guide" class="doc-section">
+        <h2 class="h2">{L(lang, toc[6][1])}</h2>
+        <p>{L(lang, { ko: '학년 대응표, 학사 일정과 방학, 하루 일과, 학교 행정, 급식과 방과후, 학교와 소통하는 방법, 학부모 대표 제도까지 프랑스 학교생활에 필요한 정보를 따로 정리했습니다.', fr: 'Correspondance des classes, calendrier, journée type, démarches, cantine et périscolaire, communication avec l’école, représentants de parents.' })}</p>
+        <a class="btn btn-accent" style="align-self:flex-start" href={href(lang, 'section/guide/')}>{L(lang, { ko: '프랑스 학교생활 가이드', fr: 'Guide de la vie scolaire' })} →</a>
+      </section>
     </div>
-  </section>
-  <div class="wrap" style="padding:32px 24px 56px"><Sources lang={lang} /></div>
+  </div>
 </Base>

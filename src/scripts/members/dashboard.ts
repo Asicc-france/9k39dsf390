@@ -237,14 +237,14 @@ const RENDER: Record<Tab, (p: HTMLElement) => Promise<void>> = {
   },
 
   async ops(panel) {
-    const [expenses, sharing] = await Promise.all([load('expenses'), load('sharing')]);
+    const expenses = await load('expenses');
     panel.innerHTML = head('ops', '') + `
       <div class="grid g-2">
         <div class="card card-pad stack gap-8">
           <span class="tiny">${esc(tr('opsFee'))}</span>
           <b style="font-family:var(--serif);font-size:34px;color:var(--accent)">20 €</b>
           <p class="small muted">${esc(tr('opsFeeText'))}</p>
-          <a class="btn btn-accent btn-sm" style="align-self:flex-start" href="${pub('join/#cotisation')}">${esc(tr('payHelloAsso'))}</a>
+          <span class="box small">${esc(tr('opsFeeHow'))}</span>
         </div>
         <div class="card card-pad stack gap-8">
           <span class="tiny">${esc(tr('opsExpenses'))}</span>
@@ -254,37 +254,7 @@ const RENDER: Record<Tab, (p: HTMLElement) => Promise<void>> = {
       <div class="card card-pad row between gap-16">
         <div class="stack gap-8" style="flex:1 1 320px"><b>${esc(tr('opsVolunteer'))}</b><p class="small muted">${esc(tr('opsVolunteerText'))}</p></div>
         <a class="btn btn-dark btn-sm" href="${pub('contact/?type=volunteer')}">${esc(tr('apply'))}</a>
-      </div>
-      <div class="card">
-        <div style="padding:20px 22px;border-bottom:1px solid var(--line-2)" class="row between gap-8"><b>${esc(tr('opsSharing'))}</b></div>
-        <form class="form" style="padding:20px 22px;border-bottom:1px solid var(--line-2)" data-share novalidate>
-          <label class="field full">${esc(tr('title'))}<input name="title" maxlength="120" required></label>
-          <label class="field full">${esc(tr('body'))}<textarea name="body" rows="3" maxlength="2000"></textarea></label>
-          <div class="full row gap-12"><button class="btn btn-dark btn-sm" type="submit">${esc(tr('post'))}</button><span class="err" data-msg></span></div>
-        </form>
-        <ul class="list" data-list></ul>
       </div>`;
-    const ul = panel.querySelector<HTMLElement>('[data-list]')!;
-    const draw = (list: Item[]) => {
-      ul.innerHTML = list.length ? list.map((x) => `<li><div class="grow"><b>${esc(x.title)}</b>${x.body ? `<p class="small muted" style="white-space:pre-line">${esc(x.body)}</p>` : ''}<span class="tiny">${esc(x.authorName ?? '')} · ${esc(fmtDate(x.date ?? x.createdAt))}</span></div>${x.uid === meUser.uid || me.role === 'admin' ? `<button class="btn btn-ghost btn-sm" data-del="${esc(x.id)}">${esc(tr('delete'))}</button>` : ''}</li>`).join('') : `<li class="empty">${esc(tr('none'))}</li>`;
-      ul.querySelectorAll<HTMLButtonElement>('[data-del]').forEach((d) => d.addEventListener('click', async () => {
-        if (!confirm(tr('confirmDelete'))) return;
-        try { await b.remove('sharing', d.dataset.del!); draw(await load('sharing', true)); } catch (e) { alert(errMsg(e)); }
-      }));
-    };
-    draw(sharing);
-    const f = panel.querySelector<HTMLFormElement>('[data-share]')!;
-    f.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const title = (f.elements.namedItem('title') as HTMLInputElement).value.trim();
-      const body = (f.elements.namedItem('body') as HTMLTextAreaElement).value.trim();
-      const msg = f.querySelector<HTMLElement>('[data-msg]')!;
-      if (!title) return (msg.textContent = tr('err.required'));
-      const btn = f.querySelector<HTMLButtonElement>('[type=submit]')!; setBusy(btn, true);
-      try { await b.add('sharing', { title, body, date: new Date().toISOString().slice(0, 10) }); f.reset(); msg.textContent = ''; draw(await load('sharing', true)); }
-      catch (e2) { msg.textContent = errMsg(e2); }
-      setBusy(btn, false);
-    });
   },
 
   async account(panel) {

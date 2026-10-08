@@ -3,7 +3,7 @@
 import { getCollection } from 'astro:content';
 import Base from '../../layouts/Base.astro';
 import { langPaths, href, L, formatDate, type Lang } from '../../i18n/ui';
-import { LEVELS, EVENTS, CAMPAIGN, NEXT_YEAR } from '../../data/site';
+import { LEVELS, EVENTS } from '../../data/site';
 import { CATS } from '../../data/news';
 
 export const getStaticPaths = langPaths;
@@ -12,8 +12,8 @@ const loc = lang === 'ko' ? 'ko-KR' : 'fr-FR';
 
 const news = (await getCollection('news', (e) => e.id.startsWith(`${lang}/`) && !e.data.draft))
   .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
-  .slice(0, 4);
-const upcoming = [...EVENTS].sort((a, b) => a.date.localeCompare(b.date)).slice(0, 4);
+  .slice(0, 5);
+const upcoming = [...EVENTS].sort((a, b) => a.date.localeCompare(b.date)).slice(0, 5);
 
 const ICONS: Record<string, string> = {
   admission: '<path d="M3 9l9-5 9 5-9 5-9-5z"/><path d="M7 11v5c3 2 7 2 10 0v-5"/>',
@@ -24,12 +24,12 @@ const ICONS: Record<string, string> = {
   contact: '<path d="M4 6h16v12H4z"/><path d="m4 7 8 6 8-6"/>',
 };
 const TILES = [
-  { k: 'admission', path: 'admission/', t: { ko: '입학 안내', fr: 'Admissions' }, s: { ko: '절차 · 일정 · FAQ', fr: 'Procédure, calendrier, FAQ' } },
-  { k: 'guide', path: 'section/guide/', t: { ko: '학교생활 가이드', fr: 'Vie scolaire' }, s: { ko: '학년 대응표 · 방학', fr: 'Classes, vacances' } },
+  { k: 'admission', path: 'admission/', t: { ko: '입학 안내', fr: 'Admissions' }, s: { ko: '지원 자격 · 절차 · 일정 · FAQ', fr: 'Conditions, procédure, FAQ' } },
+  { k: 'guide', path: 'section/guide/', t: { ko: '학교생활 가이드', fr: 'Vie scolaire' }, s: { ko: '학제 · 학사 일정 · 급식 · 방과후', fr: 'Classes, calendrier, cantine' } },
   { k: 'events', path: 'events/', t: { ko: '행사 일정', fr: 'Agenda' }, s: { ko: '입학 · 학교 · 협회', fr: 'Admissions, écoles' } },
-  { k: 'about', path: 'about/', t: { ko: '협회 소개', fr: 'L’association' }, s: { ko: '활동 · 운영진 · 정관', fr: 'Actions, bureau, statuts' } },
-  { k: 'members', path: 'membres/', t: { ko: '회원 영역', fr: 'Espace membres' }, s: { ko: '회의록 · 공지 · 아이들 마당', fr: 'Procès-verbaux, annonces' } },
-  { k: 'contact', path: 'contact/', t: { ko: '문의', fr: 'Contact' }, s: { ko: '학부모가 답변합니다', fr: 'Des parents vous répondent' } },
+  { k: 'about', path: 'about/', t: { ko: '협회 소개', fr: 'L’association' }, s: { ko: '인사말 · 활동 · 운영진', fr: 'Mot d’accueil, bureau' } },
+  { k: 'members', path: 'membres/', t: { ko: '회원 영역', fr: 'Espace membres' }, s: { ko: '회의록 · 공지 · 대외협력 기록', fr: 'Procès-verbaux, annonces' } },
+  { k: 'contact', path: 'contact/', t: { ko: '문의 · 소식지', fr: 'Contact, lettre' }, s: { ko: '학부모 대표가 답변합니다', fr: 'Les représentants répondent' } },
 ];
 const icon = (k: string) => `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONS[k]}</svg>`;
 ---
@@ -40,16 +40,18 @@ const icon = (k: string) => `<svg width="22" height="22" viewBox="0 0 24 24" fil
         <span class="hero-kicker">SECTION INTERNATIONALE CORÉENNE · COURBEVOIE</span>
         <h1>{L(lang, { ko: '유치원부터 중학교까지, 한국어로 이어지는 배움', fr: 'De la maternelle au collège, un parcours en coréen' })}</h1>
         <p>{L(lang, {
-          ko: '쿠르브부아 공립학교의 한국어 국제섹션(Théophile Gautier · Armand Silvestre · Les Bruyères) 학부모들이 만든 협회입니다.',
-          fr: 'Association des parents de la section internationale coréenne de Courbevoie (Théophile Gautier, Armand Silvestre, Les Bruyères).' })}</p>
+          ko: '쿠르브부아 공립학교 세 곳에서 운영되는 한국어 국제섹션의 학부모협회. 2017년 개설 이후 이어져 온 학부모 활동을 바탕으로 2026년 공식 설립된 비영리 단체입니다.',
+          fr: 'Association des parents de la section internationale coréenne, présente dans trois établissements publics de Courbevoie. Fondée en 2026, elle prolonge l’engagement des familles depuis l’ouverture de la section en 2017.' })}</p>
       </div>
-      <aside class="campaign" aria-label={L(lang, { ko: '입학 일정 요약', fr: 'Calendrier des admissions' })}>
-        <div class="row between gap-8"><b>{L(lang, { ko: `${NEXT_YEAR.ko} 입학`, fr: 'Admissions 2027–2028' })}</b><a href={href(lang, 'admission/')}>{L(lang, { ko: '자세히', fr: 'Détails' })} →</a></div>
-        <ol>
-          {CAMPAIGN.filter((_, i) => i !== 1).map((c) => <li><span>{L(lang, c.when)}</span><b>{L(lang, c.what)}</b></li>)}
-        </ol>
-        <p class="tiny" style="color:#A9BEC6">{L(lang, { ko: '지난해 공고 기준 예상 일정이며, 올해 공고가 나오면 갱신합니다.', fr: 'Calendrier indicatif d’après l’an dernier.' })}</p>
-      </aside>
+      <nav class="intro-schools" aria-label={L(lang, { ko: '세 학교', fr: 'Les trois établissements' })}>
+        {LEVELS.map((lv) => (
+          <a class="intro-school" href={href(lang, `section/#${lv.id}`)}>
+            <span class="lv">{L(lang, lv.name)}</span>
+            <b>{lv.school}</b>
+            <span>{lv.address.replace(', 92400 Courbevoie', '')} · {L(lang, lv.hours).split(' (')[0].split(',')[0]}</span>
+          </a>
+        ))}
+      </nav>
     </div>
   </section>
 
@@ -94,13 +96,4 @@ const icon = (k: string) => `<svg width="22" height="22" viewBox="0 0 24 24" fil
     </div>
   </section>
 
-  <section class="wrap schools" aria-label={L(lang, { ko: '세 학교', fr: 'Les trois établissements' })}>
-    {LEVELS.map((lv) => (
-      <a class="school" href={href(lang, `section/#${lv.id}`)}>
-        <span class="code">{lv.code}</span>
-        <b>{L(lang, lv.name)} · {lv.school.replace(/^(École maternelle|École élémentaire|Collège) /, '')}</b>
-        <span class="tiny">{L(lang, lv.hours).split(' (')[0]} · {lv.address.split(',')[0]}</span>
-      </a>
-    ))}
-  </section>
 </Base>

@@ -16,8 +16,8 @@ const TYPES = [
 ---
 <Base lang={lang} rest="contact/" title={L(lang, { ko: '문의', fr: 'Contact' })}>
   <PageHero lang={lang} eyebrow={L(lang, { ko: '문의', fr: 'Contact' })}
-    title={L(lang, { ko: '무엇이든 물어보세요', fr: 'Écrivez-nous' })}
-    intro={L(lang, { ko: '한국어와 프랑스어로 답변합니다. 입학 문의는 해당 학교급 대표가 직접 답변합니다.', fr: 'Nous répondons en coréen et en français. Les questions d’admission sont traitées par le représentant du niveau concerné.' })} />
+    title={L(lang, { ko: '협회 문의와 소식지 구독', fr: 'Contact et lettre d’information' })}
+    intro={L(lang, { ko: '문의는 한국어와 프랑스어로 받으며, 입학과 학교생활에 관한 문의는 해당 학교급 대표가 답변합니다. 입학 원서 제출과 결과 문의는 교육청으로 해 주세요.', fr: 'Nous répondons en coréen et en français. Les questions d’admission sont traitées par le représentant du niveau concerné.' })} />
   <section class="wrap sec split">
     <div class="side">
       <h2 class="h3">{L(lang, { ko: '다른 연락 방법', fr: 'Autres moyens' })}</h2>
@@ -42,6 +42,24 @@ const TYPES = [
       <input class="hp" name="website" tabindex="-1" autocomplete="off" aria-hidden="true">
       <div class="full row gap-16"><button class="btn btn-dark" type="submit">{L(lang, { ko: '보내기', fr: 'Envoyer' })}</button><span class="err" data-form-msg role="status"></span></div>
     </form>
+  </section>
+  <section id="newsletter" class="wrap sec" style="scroll-margin-top:96px;padding-top:0">
+    <div class="card card-pad split" style="align-items:start;gap:32px">
+      <div class="side stack gap-8">
+        <span class="eyebrow">{L(lang, { ko: '소식지', fr: 'Lettre d’information' })}</span>
+        <h2 class="h2">{L(lang, { ko: '협회 소식지 구독', fr: 'Recevoir la lettre de l’ASICC' })}</h2>
+        <p class="muted">{L(lang, { ko: '총회 결과, 입학 일정, 협회 공지를 학기마다 이메일로 보내 드립니다. 재학생 가정이 아니어도 구독할 수 있으며, 언제든 해지할 수 있습니다.', fr: 'Comptes rendus d’assemblée, calendrier des admissions et annonces de l’association, chaque trimestre. Ouvert à tous, désinscription à tout moment.' })}</p>
+      </div>
+      <form class="main form" data-public-form="subscribers" novalidate>
+        <label class="field full">{L(lang, { ko: '이메일', fr: 'E-mail' })}<input name="email" type="email" autocomplete="email" required></label>
+        <label class="field full">{L(lang, { ko: '받을 언어', fr: 'Langue' })}
+          <select name="lang"><option value="ko" selected={lang === 'ko'}>한국어</option><option value="fr" selected={lang === 'fr'}>Français</option><option value="both">{L(lang, { ko: '한국어·프랑스어', fr: 'Coréen et français' })}</option></select>
+        </label>
+        <label class="check full"><input type="checkbox" name="consent" required>{L(lang, { ko: '소식지 발송을 위한 이메일 수집에 동의합니다.', fr: 'J’accepte que mon adresse soit utilisée pour l’envoi de la lettre.' })}</label>
+        <input class="hp" name="website" tabindex="-1" autocomplete="off" aria-hidden="true">
+        <div class="full row gap-16"><button class="btn btn-accent" type="submit">{L(lang, { ko: '구독하기', fr: 'S’abonner' })}</button><span class="err" data-form-msg role="status"></span></div>
+      </form>
+    </div>
   </section>
   <script>
     import '../../scripts/public-forms';

@@ -43,13 +43,18 @@ export const t = (lang: Lang, key: UiKey) => ui[key][lang];
 /** 페이지별 짧은 문구를 한 곳에서 다루기 위한 헬퍼 */
 export const L = <T,>(lang: Lang, v: { ko: T; fr: T }) => v[lang];
 
-export const NAV: { key: UiKey; path: string }[] = [
+export type NavItem = { key: UiKey; path: string; children?: { label: { ko: string; fr: string }; path: string }[] };
+export const NAV: NavItem[] = [
   { key: 'nav.about', path: 'about/' },
-  { key: 'nav.section', path: 'section/' },
+  { key: 'nav.section', path: 'section/', children: [
+    { label: { ko: '국제섹션 안내', fr: 'Présentation de la section' }, path: 'section/' },
+    { label: { ko: '프랑스 학제와 국제섹션', fr: 'Système scolaire et SI' }, path: 'section/#system' },
+    { label: { ko: '세 학교 안내', fr: 'Les trois établissements' }, path: 'section/#schools' },
+    { label: { ko: '프랑스 학교생활 가이드', fr: 'Guide de la vie scolaire' }, path: 'section/guide/' },
+  ] },
   { key: 'nav.admission', path: 'admission/' },
   { key: 'nav.news', path: 'news/' },
   { key: 'nav.events', path: 'events/' },
-  { key: 'nav.join', path: 'join/' },
   { key: 'nav.contact', path: 'contact/' },
 ];
 
