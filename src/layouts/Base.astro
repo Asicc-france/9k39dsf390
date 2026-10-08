@@ -65,6 +65,9 @@ const current = (p: string) => rest.startsWith(p);
             <a href={href(lang, n.path)} aria-current={current(n.path) ? 'page' : undefined} aria-haspopup="true">{t(lang, n.key)}
               <svg class="caret" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
             </a>
+            <button type="button" class="sub-toggle" aria-expanded="false" aria-label={lang === 'ko' ? '하위 메뉴 펼치기' : 'Afficher le sous-menu'}>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+            </button>
             <div class="sub">
               {n.children.map((c) => <a href={href(lang, c.path)}>{c.label[lang]}</a>)}
             </div>
@@ -74,13 +77,14 @@ const current = (p: string) => rest.startsWith(p);
         ))}
       </nav>
       <div class="tools">
-        <a class="lang-link" href={altPath(lang, altR)} hreflang={other} lang={other} data-lang-switch={other}>{t(lang, 'lang.switch')}</a>
+        <a class="lang-link" href={altPath(lang, altR)} hreflang={other} lang={other} data-lang-switch={other}><span class="full">{t(lang, 'lang.switch')}</span><span class="abbr" aria-hidden="true">{other === 'fr' ? 'FR' : 'KO'}</span></a>
         <a class="btn btn-dark btn-sm members-btn" href={href(lang, 'membres/')}>
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
           <span class="lbl">{t(lang, 'nav.members')}</span>
         </a>
         <button type="button" class="menu-btn" id="menuBtn" aria-controls="nav" aria-expanded="false" aria-label={t(lang, 'nav.menu')}>
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+          <svg class="ic-open" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+          <svg class="ic-close" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
         </button>
       </div>
     </div>
@@ -134,9 +138,25 @@ const current = (p: string) => rest.startsWith(p);
   <script>
     const btn = document.getElementById('menuBtn');
     const nav = document.getElementById('nav');
-    btn?.addEventListener('click', () => {
-      const open = nav!.classList.toggle('open');
-      btn.setAttribute('aria-expanded', String(open));
+    const setMenu = (open: boolean) => {
+      nav!.classList.toggle('open', open);
+      document.documentElement.classList.toggle('menu-open', open);
+      btn!.setAttribute('aria-expanded', String(open));
+    };
+    btn?.addEventListener('click', () => setMenu(!nav!.classList.contains('open')));
+    nav?.querySelectorAll('a').forEach((a) => a.addEventListener('click', () => setMenu(false)));
+    window.addEventListener('resize', () => { if (window.innerWidth > 980) setMenu(false); });
+    document.querySelectorAll<HTMLButtonElement>('.sub-toggle').forEach((b) => b.addEventListener('click', () => {
+      const item = b.closest('.nav-item')!;
+      const open = item.classList.toggle('sub-open');
+      b.setAttribute('aria-expanded', String(open));
+    }));
+    // 모바일에서 표를 카드로 보여 주기 위해 각 칸에 열 제목을 붙임
+    document.querySelectorAll<HTMLTableElement>('main .table-wrap table').forEach((tb) => {
+      const heads = [...tb.querySelectorAll('thead th')].map((th) => th.textContent?.trim() ?? '');
+      if (!heads.length) return;
+      tb.classList.add('rtable'); if (heads.length < 3) tb.classList.add('rtable-2');
+      tb.querySelectorAll('tbody tr').forEach((tr) => [...tr.children].forEach((td, i) => td.setAttribute('data-label', heads[i] ?? '')));
     });
     // 사용자가 직접 고른 언어를 기억해 첫 화면 자동 안내에 사용
     document.querySelectorAll<HTMLAnchorElement>('[data-lang-switch]').forEach((a) =>
