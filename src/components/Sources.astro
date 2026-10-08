@@ -1,0 +1,12 @@
+---
+import { L, type Lang } from '../i18n/ui';
+import { SOURCES } from '../data/site';
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+---
+<section class="stack gap-8" style="border-top:1px solid var(--line);padding-top:20px">
+  <h2 class="tiny" style="font-weight:500">{L(lang, { ko: '정보 출처', fr: 'Sources' })}</h2>
+  <ul class="tiny" style="padding-left:1.2em;display:grid;gap:4px">
+    {SOURCES.map((s) => <li><a href={s.href} rel="noopener">{s.label}</a></li>)}
+  </ul>
+</section>

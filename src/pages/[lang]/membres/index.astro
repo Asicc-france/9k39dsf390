@@ -1,0 +1,13 @@
+---
+import Base from '../../../layouts/Base.astro';
+import { langPaths, L, type Lang } from '../../../i18n/ui';
+export const getStaticPaths = langPaths;
+const lang = Astro.params.lang as Lang;
+---
+<Base lang={lang} rest="membres/" title={L(lang, { ko: '회원 영역', fr: 'Espace membres' })} noindex>
+  <div class="wrap m-shell">
+    <div id="app" aria-live="polite"></div>
+    <noscript><p class="notice notice-warn">{L(lang, { ko: '회원 영역은 자바스크립트가 필요합니다.', fr: 'L’espace membres nécessite JavaScript.' })}</p></noscript>
+  </div>
+  <script>import '../../../scripts/members/dashboard';</script>
+</Base>

@@ -1,0 +1,52 @@
+---
+import Base from '../../layouts/Base.astro';
+import PageHero from '../../components/PageHero.astro';
+import { langPaths, L, type Lang } from '../../i18n/ui';
+
+export const getStaticPaths = langPaths;
+const lang = Astro.params.lang as Lang;
+const TYPES = [
+  ['admission', { ko: '입학 문의', fr: 'Admissions' }],
+  ['asso', { ko: '협회 활동', fr: 'Vie de l’association' }],
+  ['volunteer', { ko: '실무진 참여', fr: 'Bénévolat' }],
+  ['partner', { ko: '협력·후원 제안', fr: 'Partenariat' }],
+  ['press', { ko: '언론·기관', fr: 'Presse, institutions' }],
+  ['other', { ko: '기타', fr: 'Autre' }],
+] as const;
+---
+<Base lang={lang} rest="contact/" title={L(lang, { ko: '문의', fr: 'Contact' })}>
+  <PageHero lang={lang} eyebrow={L(lang, { ko: '문의', fr: 'Contact' })}
+    title={L(lang, { ko: '무엇이든 물어보세요', fr: 'Écrivez-nous' })}
+    intro={L(lang, { ko: '한국어와 프랑스어로 답변합니다. 입학 문의는 해당 학교급 대표가 직접 답변합니다.', fr: 'Nous répondons en coréen et en français. Les questions d’admission sont traitées par le représentant du niveau concerné.' })} />
+  <section class="wrap sec split">
+    <div class="side">
+      <h2 class="h3">{L(lang, { ko: '다른 연락 방법', fr: 'Autres moyens' })}</h2>
+      <div class="card card-pad stack gap-8 small">
+        <div class="kv"><span class="muted">E-mail</span><span class="placeholder">contact@[domaine]</span></div>
+        <div class="kv"><span class="muted">Instagram</span><span class="placeholder">@[compte]</span></div>
+        <div class="kv"><span class="muted">{L(lang, { ko: '주소', fr: 'Siège' })}</span><span class="placeholder">[Adresse du siège]</span></div>
+      </div>
+      <p class="tiny">{L(lang, { ko: '보내 주신 내용은 답변에만 사용하고, 1년 뒤 삭제합니다.', fr: 'Vos données ne servent qu’à vous répondre et sont supprimées après un an.' })}</p>
+    </div>
+    <form class="main card card-pad form" data-public-form="messages" novalidate>
+      <label class="field">{L(lang, { ko: '이름', fr: 'Nom' })}<input name="name" autocomplete="name" required></label>
+      <label class="field">{L(lang, { ko: '이메일', fr: 'E-mail' })}<input name="email" type="email" autocomplete="email" required></label>
+      <label class="field">{L(lang, { ko: '문의 유형', fr: 'Objet' })}
+        <select name="type" id="ctype">{TYPES.map(([v, l]) => <option value={v}>{L(lang, l)}</option>)}</select>
+      </label>
+      <label class="field">{L(lang, { ko: '관련 학교급', fr: 'Niveau concerné' })}
+        <select name="level"><option value="">{L(lang, { ko: '해당 없음', fr: 'Sans objet' })}</option><option value="mat">{L(lang, { ko: '유치원', fr: 'Maternelle' })}</option><option value="elem">{L(lang, { ko: '초등학교', fr: 'Élémentaire' })}</option><option value="col">{L(lang, { ko: '중학교', fr: 'Collège' })}</option></select>
+      </label>
+      <label class="field full">{L(lang, { ko: '내용', fr: 'Message' })}<textarea name="message" rows="6" required></textarea></label>
+      <label class="check full"><input type="checkbox" name="consent" required>{L(lang, { ko: '답변을 위한 개인정보 수집에 동의합니다.', fr: 'J’accepte que mes données soient utilisées pour me répondre.' })}</label>
+      <input class="hp" name="website" tabindex="-1" autocomplete="off" aria-hidden="true">
+      <div class="full row gap-16"><button class="btn btn-dark" type="submit">{L(lang, { ko: '보내기', fr: 'Envoyer' })}</button><span class="err" data-form-msg role="status"></span></div>
+    </form>
+  </section>
+  <script>
+    import '../../scripts/public-forms';
+    const t = new URLSearchParams(location.search).get('type');
+    const s = document.getElementById('ctype') as HTMLSelectElement;
+    if (t && [...s.options].some((o) => o.value === t)) s.value = t;
+  </script>
+</Base>

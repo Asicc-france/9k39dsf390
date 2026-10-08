@@ -1,0 +1,18 @@
+rules_version = '2';
+// 첨부 파일(회의록, 아이들 마당 이미지): 승인된 회원만 열람, 임원만 업로드
+service firebase.storage {
+  match /b/{bucket}/o {
+    function member() {
+      return request.auth != null && request.auth.token.email_verified == true
+        && firestore.get(/databases/(default)/documents/members/$(request.auth.uid)).data.status == 'approved';
+    }
+    function admin() {
+      return member() && firestore.get(/databases/(default)/documents/members/$(request.auth.uid)).data.role == 'admin';
+    }
+    match /{col}/{docId}/{file} {
+      allow read: if member() && col in ['minutes', 'gallery', 'notices', 'relations'];
+      allow write: if admin() && request.resource.size < 20 * 1024 * 1024;
+      allow delete: if admin();
+    }
+  }
+}

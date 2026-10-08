@@ -1,0 +1,83 @@
+---
+import Base from '../../../layouts/Base.astro';
+import PageHero from '../../../components/PageHero.astro';
+import { langPaths, href, L, type Lang } from '../../../i18n/ui';
+import { GRADES } from '../../../data/site';
+
+export const getStaticPaths = langPaths;
+const lang = Astro.params.lang as Lang;
+const toc = [
+  ['grades', { ko: '학년 대응표', fr: 'Correspondance des classes' }],
+  ['calendar', { ko: '학사 일정과 방학', fr: 'Calendrier et vacances' }],
+  ['day', { ko: '하루 일과와 수요일', fr: 'La journée type' }],
+  ['services', { ko: '급식과 방과후', fr: 'Cantine et périscolaire' }],
+  ['communication', { ko: '학교와 소통하기', fr: 'Communiquer avec l’école' }],
+] as const;
+---
+<Base lang={lang} rest="section/guide/" title={L(lang, { ko: '프랑스 학교생활 가이드', fr: 'Guide de la vie scolaire' })}>
+  <PageHero lang={lang} crumb={{ label: L(lang, { ko: '국제섹션', fr: 'La section' }), path: 'section/' }}
+    eyebrow={L(lang, { ko: '학교생활 가이드', fr: 'Guide pratique' })}
+    title={L(lang, { ko: '프랑스 학교생활, 처음이신가요?', fr: 'L’école française, mode d’emploi' })}
+    intro={L(lang, { ko: '한국 학제에 익숙한 가정을 위해 프랑스 학교의 기본 구조를 정리했습니다. 세부 사항은 학교와 시청 안내가 우선합니다.', fr: 'Pour les familles qui découvrent le système français : repères essentiels. Les informations de l’école et de la mairie font foi.' })} />
+
+  <div class="wrap sec with-aside">
+    <aside><nav class="toc">{toc.map(([id, l]) => <a href={`#${id}`}>{L(lang, l)}</a>)}</nav></aside>
+    <div class="content stack" style="gap:64px">
+      <section id="grades" class="stack gap-16">
+        <h2 class="h2">{L(lang, toc[0][1])}</h2>
+        <p class="muted">{L(lang, { ko: '프랑스는 출생연도 기준으로 9월에 학년이 시작합니다. 한국 학년과는 대략적인 대응입니다.', fr: 'En France, la classe dépend de l’année de naissance et l’année scolaire commence en septembre. Correspondances indicatives.' })}</p>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>{L(lang, { ko: '만 나이(9월 기준)', fr: 'Âge en septembre' })}</th><th>{L(lang, { ko: '프랑스', fr: 'France' })}</th><th>{L(lang, { ko: '한국 대응', fr: 'Équivalent coréen' })}</th><th>{L(lang, { ko: '학교급', fr: 'Cycle' })}</th></tr></thead>
+            <tbody>{GRADES.map((g) => <tr><td>{g.age}</td><td><b>{g.fr}</b></td><td>{g.ko}</td><td>{L(lang, g.level)}</td></tr>)}</tbody>
+          </table>
+        </div>
+      </section>
+
+      <section id="calendar" class="stack gap-16">
+        <h2 class="h2">{L(lang, toc[1][1])}</h2>
+        <div class="prose">
+          <p>{L(lang, { ko: '쿠르브부아는 베르사유 교육청 관할로 방학 구분상 C구역(zone C)에 속합니다. 학년은 9월 초에 시작해 7월 초에 끝나며, 약 6~7주 수업 후 2주 방학이 반복됩니다.', fr: 'Courbevoie dépend de l’académie de Versailles (zone C). L’année va de début septembre à début juillet, avec environ deux semaines de vacances toutes les six à sept semaines.' })}</p>
+          <ul>
+            <li>{L(lang, { ko: '투생 방학 (10월 말~11월 초)', fr: 'Vacances de la Toussaint (fin octobre)' })}</li>
+            <li>{L(lang, { ko: '성탄 방학 (12월 말~1월 초)', fr: 'Vacances de Noël' })}</li>
+            <li>{L(lang, { ko: '겨울 방학 (2월~3월, 구역별 상이)', fr: 'Vacances d’hiver (février–mars, selon la zone)' })}</li>
+            <li>{L(lang, { ko: '봄 방학 (4월~5월, 구역별 상이)', fr: 'Vacances de printemps (avril–mai, selon la zone)' })}</li>
+            <li>{L(lang, { ko: '여름 방학 (7월 초~8월 말)', fr: 'Grandes vacances (juillet–août)' })}</li>
+          </ul>
+          <p>{L(lang, { ko: '정확한 날짜는 프랑스 교육부 공식 학사력에서 확인할 수 있습니다.', fr: 'Les dates exactes figurent au calendrier scolaire officiel.' })} <a href="https://www.education.gouv.fr/calendrier-scolaire-100148" rel="noopener">education.gouv.fr</a></p>
+        </div>
+      </section>
+
+      <section id="day" class="stack gap-16">
+        <h2 class="h2">{L(lang, toc[2][1])}</h2>
+        <div class="prose">
+          <p>{L(lang, { ko: '유치원과 초등학교는 보통 오전 8시 30분 전후에 시작해 오후 4시 30분 전후에 끝납니다. 많은 지역에서 수요일은 수업이 없거나 오전만 있으며, 쿠르브부아의 운영 방식은 학교 안내를 확인해 주세요.', fr: 'En maternelle et en élémentaire, la journée commence vers 8 h 30 et se termine vers 16 h 30. Le mercredi est souvent libre ou limité à la matinée : vérifiez l’organisation retenue à Courbevoie.' })}</p>
+          <p>{L(lang, { ko: '국제섹션 수업은 일반 수업에 더해 편성되므로, 학년과 학교에 따라 시간표가 일반 학급과 다를 수 있습니다.', fr: 'Les cours de section s’ajoutent au tronc commun : l’emploi du temps peut différer de celui des autres classes.' })}</p>
+        </div>
+      </section>
+
+      <section id="services" class="stack gap-16">
+        <h2 class="h2">{L(lang, toc[3][1])}</h2>
+        <div class="grid g-2">
+          <div class="card feature"><h3 class="h3">{L(lang, { ko: '학교 급식 (cantine)', fr: 'Cantine' })}</h3><p>{L(lang, { ko: '유치원과 초등학교 급식은 시청이 운영하며, 시청 가족 포털에서 신청합니다. 요금은 가정 소득에 따라 달라집니다.', fr: 'Gérée par la mairie pour la maternelle et l’élémentaire ; inscription sur le portail famille, tarif selon le quotient familial.' })}</p></div>
+          <div class="card feature"><h3 class="h3">{L(lang, { ko: '방과후 (périscolaire)', fr: 'Périscolaire' })}</h3><p>{L(lang, { ko: '등교 전, 방과 후, 수요일 돌봄(centre de loisirs)도 시청을 통해 신청합니다. 신학기 전 마감에 유의하세요.', fr: 'Accueil du matin, du soir et du mercredi : inscription auprès de la mairie, avant la rentrée.' })}</p></div>
+          <div class="card feature"><h3 class="h3">{L(lang, { ko: '보험 (assurance scolaire)', fr: 'Assurance scolaire' })}</h3><p>{L(lang, { ko: '학교 외부 활동에는 학생 보험 증명서를 요구합니다. 가정 종합보험에 포함되어 있는지 확인하세요.', fr: 'Une attestation est demandée pour les sorties. Vérifiez si votre assurance habitation la couvre.' })}</p></div>
+          <div class="card feature"><h3 class="h3">{L(lang, { ko: '중학교 급식', fr: 'Demi-pension au collège' })}</h3><p>{L(lang, { ko: '중학교 급식은 학교(또는 도)가 운영하며 신청 절차가 초등학교와 다릅니다.', fr: 'Au collège, la demi-pension relève de l’établissement et du département ; procédure distincte.' })}</p></div>
+        </div>
+      </section>
+
+      <section id="communication" class="stack gap-16">
+        <h2 class="h2">{L(lang, toc[4][1])}</h2>
+        <div class="prose">
+          <ul>
+            <li>{L(lang, { ko: '초등학교: 연락 수첩(cahier de liaison)과 학교 알림장으로 소통합니다.', fr: 'Élémentaire : cahier de liaison et messages de l’école.' })}</li>
+            <li>{L(lang, { ko: '중학교: 온라인 학교 시스템(ENT, Pronote 등)으로 성적, 숙제, 공지를 확인합니다.', fr: 'Collège : l’ENT (Pronote, etc.) pour les notes, devoirs et informations.' })}</li>
+            <li>{L(lang, { ko: '학부모 대표 선거: 매년 10월에 학교 운영위원회(conseil d’école) 학부모 대표를 선출합니다.', fr: 'Élections des représentants de parents : chaque année en octobre (conseil d’école, conseil d’administration).' })}</li>
+          </ul>
+          <p>{L(lang, { ko: '궁금한 점은 협회 학교급 대표에게 문의하시면 경험을 바탕으로 안내해 드립니다.', fr: 'Pour toute question, les représentants de niveau de l’association partagent volontiers leur expérience.' })} <a href={href(lang, 'contact/')}>{L(lang, { ko: '문의하기', fr: 'Nous écrire' })}</a></p>
+        </div>
+      </section>
+    </div>
+  </div>
+</Base>

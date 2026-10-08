@@ -1,0 +1,136 @@
+---
+// 폰트는 사이트 안에 포함 (외부 Google Fonts 호출 없음, 개인정보 보호)
+import '@fontsource/gowun-batang/400.css';
+import '@fontsource/gowun-batang/700.css';
+import '@fontsource/gowun-dodum/400.css';
+import '@fontsource/ibm-plex-sans-kr/500.css';
+import '@fontsource/ibm-plex-sans-kr/600.css';
+import '@fontsource/ibm-plex-sans-kr/700.css';
+import '../styles/global.css';
+import { t, altPath, href, NAV, type Lang } from '../i18n/ui';
+import { SEARCH_INDEXING, BASE } from '../config';
+
+interface Props {
+  lang: Lang;
+  rest: string;            // 언어 접두사 뒤의 경로, 예: 'about/'
+  title?: string;
+  description?: string;
+  noindex?: boolean;
+  altRest?: string;        // 다른 언어판 경로가 다를 때 (번역 없는 게시물 등)
+}
+const { lang, rest, title, description, noindex = false, altRest } = Astro.props;
+const altR = altRest ?? rest;
+const other: Lang = lang === 'ko' ? 'fr' : 'ko';
+const fullTitle = title ? `${title} · ASICC` : `ASICC · ${t(lang, 'site.short')}`;
+const desc = description ?? (lang === 'ko'
+  ? '쿠르브부아 한국어 국제섹션(유치원·초등학교·중학교) 학부모협회 ASICC 공식 웹사이트'
+  : 'Site officiel de l’ASICC, association des parents de la section internationale coréenne de Courbevoie (maternelle, élémentaire, collège).');
+const site = Astro.site?.toString().replace(/\/$/, '') ?? '';
+const hideFromSearch = noindex || !SEARCH_INDEXING;
+const current = (p: string) => rest.startsWith(p);
+---
+<!doctype html>
+<html lang={lang}>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{fullTitle}</title>
+  <meta name="description" content={desc}>
+  {hideFromSearch && <meta name="robots" content="noindex, nofollow, noarchive">}
+  {!hideFromSearch && <>
+    <link rel="canonical" href={`${site}${href(lang, rest)}`}>
+    <link rel="alternate" hreflang={lang} href={`${site}${href(lang, rest)}`}>
+    <link rel="alternate" hreflang={other} href={`${site}${altPath(lang, altR)}`}>
+    <link rel="alternate" hreflang="x-default" href={`${site}${BASE}`}>
+  </>}
+  <meta property="og:title" content={fullTitle}>
+  <meta property="og:description" content={desc}>
+  <meta property="og:locale" content={lang === 'ko' ? 'ko_KR' : 'fr_FR'}>
+  <link rel="icon" href={`${BASE}favicon.svg`} type="image/svg+xml">
+  <slot name="head" />
+</head>
+<body>
+  <a class="skip" href="#content">{t(lang, 'nav.skip')}</a>
+  <slot name="top" />
+  <header class="site-header">
+    <div class="wrap hdr">
+      <a class="brand" href={href(lang)}>
+        <span class="logo" aria-hidden="true">한</span>
+        <span class="brand-txt"><b>ASICC</b><small>{t(lang, 'site.short')}</small></span>
+      </a>
+      <nav class="nav" id="nav" aria-label={lang === 'ko' ? '주 메뉴' : 'Menu principal'}>
+        {NAV.map((n) => (
+          <a href={href(lang, n.path)} aria-current={current(n.path) ? 'page' : undefined}>{t(lang, n.key)}</a>
+        ))}
+      </nav>
+      <div class="tools">
+        <a class="lang-link" href={altPath(lang, altR)} hreflang={other} lang={other} data-lang-switch={other}>{t(lang, 'lang.switch')}</a>
+        <a class="btn btn-dark btn-sm members-btn" href={href(lang, 'membres/')}>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+          <span class="lbl">{t(lang, 'nav.members')}</span>
+        </a>
+        <button type="button" class="menu-btn" id="menuBtn" aria-controls="nav" aria-expanded="false" aria-label={t(lang, 'nav.menu')}>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main id="content">
+    <slot />
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap ftr">
+      <div class="stack gap-8">
+        <h2>ASICC</h2>
+        <span>Association de la Section Internationale Coréenne à Courbevoie</span>
+        <span>Association loi 1901 · {t(lang, 'footer.declared')}</span>
+      </div>
+      <nav aria-label="Site">
+        <h2>{lang === 'ko' ? '사이트' : 'Le site'}</h2>
+        <ul>
+          {NAV.map((n) => <li><a href={href(lang, n.path)}>{t(lang, n.key)}</a></li>)}
+        </ul>
+      </nav>
+      <div>
+        <h2>{lang === 'ko' ? '회원과 참여' : 'Membres'}</h2>
+        <ul>
+          <li><a href={href(lang, 'membres/')}>{t(lang, 'nav.members')}</a></li>
+          <li><a href={href(lang, 'membres/signup/')}>{lang === 'ko' ? '회원 가입' : 'Créer un compte'}</a></li>
+          <li><a href={href(lang, 'join/#newsletter')}>{t(lang, 'footer.subscribe')}</a></li>
+          <li><a href={href(lang, 'about/#statuts')}>{t(lang, 'footer.statuts')}</a></li>
+        </ul>
+      </div>
+      <div>
+        <h2>{t(lang, 'nav.contact')}</h2>
+        <ul>
+          <li><a href={href(lang, 'contact/')}>{lang === 'ko' ? '문의 양식' : 'Formulaire de contact'}</a></li>
+          <li><span class="placeholder">contact@[domaine]</span></li>
+          <li><span class="placeholder">Instagram @[compte]</span></li>
+        </ul>
+      </div>
+    </div>
+    <div class="wrap ftr-bottom">
+      <span>© {new Date().getFullYear()} ASICC</span>
+      <span class="row gap-16">
+        <a href={href(lang, 'legal/')}>{t(lang, 'footer.legal')}</a>
+        <a href={href(lang, 'legal/#privacy')}>{t(lang, 'footer.privacy')}</a>
+      </span>
+    </div>
+  </footer>
+
+  <script>
+    const btn = document.getElementById('menuBtn');
+    const nav = document.getElementById('nav');
+    btn?.addEventListener('click', () => {
+      const open = nav!.classList.toggle('open');
+      btn.setAttribute('aria-expanded', String(open));
+    });
+    // 사용자가 직접 고른 언어를 기억해 첫 화면 자동 안내에 사용
+    document.querySelectorAll<HTMLAnchorElement>('[data-lang-switch]').forEach((a) =>
+      a.addEventListener('click', () => { try { localStorage.setItem('asicc-lang', a.dataset.langSwitch!); } catch {} })
+    );
+  </script>
+</body>
+</html>

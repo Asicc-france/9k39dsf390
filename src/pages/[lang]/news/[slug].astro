@@ -1,0 +1,40 @@
+---
+import { getCollection, render } from 'astro:content';
+import Base from '../../../layouts/Base.astro';
+import { LANGS, href, L, formatDate, type Lang } from '../../../i18n/ui';
+import { CATS } from '../../../data/news';
+
+export async function getStaticPaths() {
+  const all = await getCollection('news', (e) => !e.data.draft);
+  return all.map((entry) => {
+    const [lang, slug] = entry.id.split('/');
+    const other = lang === 'ko' ? 'fr' : 'ko';
+    const hasAlt = all.some((e) => e.id === `${other}/${slug}`);
+    const siblings = all.filter((e) => e.id.startsWith(`${lang}/`)).sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+    const i = siblings.findIndex((e) => e.id === entry.id);
+    return { params: { lang, slug }, props: { entry, hasAlt, newer: siblings[i - 1], older: siblings[i + 1] } };
+  });
+}
+const { entry, hasAlt, newer, older } = Astro.props;
+const lang = Astro.params.lang as Lang;
+const slug = Astro.params.slug;
+const { Content } = await render(entry);
+const c = CATS[entry.data.category];
+const s = (e: any) => e.id.split('/')[1];
+---
+<Base lang={lang} rest={`news/${slug}/`} altRest={hasAlt ? `news/${slug}/` : 'news/'} title={entry.data.title} description={entry.data.summary}>
+  <article class="wrap sec" style="max-width:800px">
+    <a class="tiny" href={href(lang, 'news/')}>← {L(lang, { ko: '소식 목록', fr: 'Toutes les actualités' })}</a>
+    <div class="stack gap-12" style="margin:20px 0 32px">
+      <div class="row gap-8"><span class={`pill ${c.pill}`}>{c[lang]}</span><time class="tiny" datetime={entry.data.date.toISOString().slice(0, 10)}>{formatDate(lang, entry.data.date)}</time></div>
+      <h1 class="h1">{entry.data.title}</h1>
+      <p class="lead">{entry.data.summary}</p>
+    </div>
+    <div class="prose"><Content /></div>
+    {!hasAlt && <p class="notice notice-info" style="margin-top:32px">{L(lang, { ko: '이 글은 한국어로만 제공됩니다.', fr: 'Cet article n’existe qu’en français.' })}</p>}
+    <nav class="row between gap-16" style="margin-top:48px;border-top:1px solid var(--line);padding-top:24px" aria-label="pagination">
+      {older ? <a href={href(lang, `news/${s(older)}/`)}>← {older.data.title}</a> : <span />}
+      {newer && <a href={href(lang, `news/${s(newer)}/`)}>{newer.data.title} →</a>}
+    </nav>
+  </article>
+</Base>

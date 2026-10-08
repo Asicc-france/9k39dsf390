@@ -1,0 +1,28 @@
+---
+import { SEARCH_INDEXING, BASE } from '../config';
+// 첫 방문: 저장된 선택 → 브라우저 언어 순으로 /ko/ 또는 /fr/ 로 안내
+---
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ASICC</title>
+  {!SEARCH_INDEXING && <meta name="robots" content="noindex, nofollow, noarchive">}
+  <link rel="icon" href={`${BASE}favicon.svg`} type="image/svg+xml">
+  <script is:inline define:vars={{ base: BASE }}>
+    var l = null;
+    try { l = localStorage.getItem('asicc-lang'); } catch (e) {}
+    if (l !== 'ko' && l !== 'fr') {
+      var langs = navigator.languages || [navigator.language || 'fr'];
+      l = langs.some(function (x) { return /^ko/i.test(x); }) ? 'ko' : 'fr';
+    }
+    location.replace(base + l + '/');
+  </script>
+  <style>body{font-family:system-ui,sans-serif;display:flex;min-height:100vh;align-items:center;justify-content:center;gap:16px;background:#F7F6F2}a{padding:12px 20px;border:1px solid #C9C6BB;border-radius:8px;color:#1E2A30;text-decoration:none}</style>
+</head>
+<body>
+  <a href={`${BASE}ko/`} lang="ko">한국어</a>
+  <a href={`${BASE}fr/`} lang="fr">Français</a>
+</body>
+</html>

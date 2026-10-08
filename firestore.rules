@@ -1,0 +1,89 @@
+rules_version = '2';
+// ASICC 접근 규칙. 실제 보안은 이 파일이 서버에서 강제합니다.
+// 권한: 방문자(공개 양식 제출만) / 승인된 학부모 회원 / 학교급 대표(rep) / 임원(admin)
+service cloud.firestore {
+  match /databases/{db}/documents {
+
+    function signedIn()  { return request.auth != null; }
+    function myDoc()     { return /databases/$(db)/documents/members/$(request.auth.uid); }
+    function me()        { return get(myDoc()).data; }
+    function hasProfile(){ return signedIn() && exists(myDoc()); }
+    function verified()  { return request.auth.token.email_verified == true; }
+    function approved()  { return hasProfile() && verified() && me().status == 'approved'; }
+    function isAdmin()   { return approved() && me().role == 'admin'; }
+    function isRep()     { return approved() && me().role == 'rep'; }
+    function isStaff()   { return isAdmin() || isRep(); }
+    function changed()   { return request.resource.data.diff(resource.data).affectedKeys(); }
+    function isEmail(v)  { return v is string && v.matches('^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$') && v.size() < 200; }
+    function str(v, max) { return v is string && v.size() <= max; }
+
+    // ---------- 회원 ----------
+    match /members/{uid} {
+      // 본인 가입: 항상 '대기 + 일반 회원'으로만 생성 가능
+      allow create: if signedIn() && request.auth.uid == uid
+        && request.resource.data.keys().hasOnly(['uid','name','email','levels','phone','imageConsent','privacyConsent','lang','status','role','repLevel','createdAt'])
+        && request.resource.data.uid == uid
+        && request.resource.data.email == request.auth.token.email
+        && request.resource.data.status == 'pending'
+        && request.resource.data.role == 'member'
+        && request.resource.data.repLevel == null
+        && request.resource.data.privacyConsent == true
+        && str(request.resource.data.name, 100)
+        && request.resource.data.levels is list && request.resource.data.levels.size() > 0
+        && request.resource.data.levels.hasOnly(['mat','elem','col']);
+
+      allow get: if signedIn() && (request.auth.uid == uid || isStaff());
+      allow list: if isStaff();
+
+      // 본인 수정: 이름, 연락처, 학교급, 언어, 이미지 동의만
+      allow update: if
+        (signedIn() && request.auth.uid == uid
+          && changed().hasOnly(['name','phone','levels','lang','imageConsent'])
+          && request.resource.data.levels.hasOnly(['mat','elem','col']))
+        // 학교급 대표: 자기 학교급 신청자의 승인 상태만
+        || (isRep() && resource.data.levels.hasAny([me().repLevel])
+          && changed().hasOnly(['status','approvedBy','approvedAt'])
+          && request.resource.data.status in ['approved','rejected','pending'])
+        // 임원: 상태와 권한
+        || (isAdmin() && changed().hasOnly(['status','approvedBy','approvedAt','role','repLevel'])
+          && request.resource.data.role in ['member','rep','admin']);
+
+      allow delete: if (signedIn() && request.auth.uid == uid) || isAdmin();
+    }
+
+    // ---------- 회원 전용 콘텐츠 (임원이 등록) ----------
+    match /notices/{id}   { allow read: if approved(); allow write: if isAdmin(); }
+    match /minutes/{id}   { allow read: if approved(); allow write: if isAdmin(); }
+    match /relations/{id} { allow read: if approved(); allow write: if isAdmin(); }
+    match /gallery/{id}   { allow read: if approved(); allow write: if isAdmin(); }
+    match /expenses/{id}  { allow read: if approved(); allow write: if isAdmin(); }
+
+    // ---------- 나눔 게시판 (회원 누구나 작성, 본인 글만 삭제) ----------
+    match /sharing/{id} {
+      allow read: if approved();
+      allow create: if approved() && request.resource.data.uid == request.auth.uid
+        && str(request.resource.data.title, 120) && str(request.resource.data.get('body', ''), 2000);
+      allow delete: if approved() && (resource.data.uid == request.auth.uid || isAdmin());
+    }
+
+    // ---------- 공개 양식: 누구나 제출, 임원만 열람 ----------
+    match /messages/{id} {
+      allow create: if isEmail(request.resource.data.email) && str(request.resource.data.name, 100)
+        && str(request.resource.data.message, 5000) && request.resource.data.consent == true;
+      allow read, delete: if isAdmin();
+    }
+    match /registrations/{id} {
+      allow create: if isEmail(request.resource.data.email) && str(request.resource.data.name, 100)
+        && str(request.resource.data.get('message', ''), 3000) && request.resource.data.consent == true;
+      allow read, delete: if isAdmin();
+    }
+    match /subscribers/{id} {
+      allow create: if isEmail(request.resource.data.email) && request.resource.data.consent == true
+        && request.resource.data.keys().hasOnly(['email','lang','consent','pageLang','date','createdAt']);
+      allow read, delete: if isAdmin();
+    }
+
+    // ---------- 임원 인수인계 자료 ----------
+    match /handover/{id} { allow read, write: if isAdmin(); }
+  }
+}

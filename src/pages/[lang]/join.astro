@@ -1,0 +1,75 @@
+---
+import Base from '../../layouts/Base.astro';
+import PageHero from '../../components/PageHero.astro';
+import { langPaths, href, L, type Lang } from '../../i18n/ui';
+
+export const getStaticPaths = langPaths;
+const lang = Astro.params.lang as Lang;
+---
+<Base lang={lang} rest="join/" title={L(lang, { ko: '참여하기', fr: 'S’engager' })}>
+  <PageHero lang={lang} eyebrow={L(lang, { ko: '참여', fr: 'S’engager' })}
+    title={L(lang, { ko: '협회와 함께하는 방법', fr: 'Comment participer' })}
+    intro={L(lang, { ko: '회원 가입, 회비, 실무진 참여, 협력 제안, 소식지 구독까지, 형편에 맞는 방식으로 함께해 주세요.', fr: 'Compte membre, cotisation, bénévolat, partenariat, lettre d’information : chacun à sa mesure.' })} />
+
+  <section class="wrap sec">
+    <div class="grid g-2">
+      <article class="card card-pad stack gap-12" id="account">
+        <span class="pill pill-navy" style="align-self:flex-start">1</span>
+        <h2 class="h3">{L(lang, { ko: '웹사이트 회원 가입', fr: 'Créer son compte membre' })}</h2>
+        <p class="muted small">{L(lang, { ko: '국제섹션 학부모는 정관상 협회 회원입니다. 회의록, 대외협력 기록, 아이들 마당을 보려면 웹사이트 계정을 만들어 주세요. 학교급 대표가 확인한 뒤 승인됩니다.', fr: 'Les parents de la section sont membres de droit. Pour accéder aux comptes rendus, à l’historique et à l’espace enfants, créez votre compte : il sera validé par votre représentant de niveau.' })}</p>
+        <ol class="small muted" style="padding-left:1.2em">
+          <li>{L(lang, { ko: '이메일과 비밀번호로 가입', fr: 'Inscription avec e-mail et mot de passe' })}</li>
+          <li>{L(lang, { ko: '이메일 인증', fr: 'Confirmation de l’e-mail' })}</li>
+          <li>{L(lang, { ko: '학교급 대표 승인 (보통 며칠 이내)', fr: 'Validation par le représentant (quelques jours)' })}</li>
+        </ol>
+        <a class="btn btn-dark" style="align-self:flex-start" href={href(lang, 'membres/signup/')}>{L(lang, { ko: '회원 가입', fr: 'Créer mon compte' })}</a>
+      </article>
+
+      <article class="card card-pad stack gap-12" id="cotisation">
+        <span class="pill pill-navy" style="align-self:flex-start">2</span>
+        <h2 class="h3">{L(lang, { ko: '연회비 납부', fr: 'Cotisation annuelle' })}</h2>
+        <p style="font-family:var(--serif);font-size:34px;font-weight:700;color:var(--accent)">20 €</p>
+        <p class="muted small">{L(lang, { ko: '가정당 연간, 자율 납부입니다. 책임보험, 협회 이메일·도메인·웹사이트, 최소 행정비에 사용합니다. 행사비는 행사별로 따로 분담합니다.', fr: 'Par famille et par an, contribution libre : assurance, messagerie, nom de domaine, site et frais administratifs. Les événements sont financés à part.' })}</p>
+        <a class="btn btn-accent" style="align-self:flex-start" href="#" data-placeholder>{L(lang, { ko: 'HelloAsso로 납부', fr: 'Payer via HelloAsso' })}</a>
+        <span class="tiny">{L(lang, { ko: 'HelloAsso는 프랑스 협회용 무료 결제 서비스입니다. 결제 화면에서 선택 기부(팁) 금액은 0으로 바꿀 수 있습니다.', fr: 'HelloAsso est gratuit pour les associations ; la contribution volontaire proposée au paiement est facultative.' })}</span>
+      </article>
+
+      <article class="card card-pad stack gap-12" id="volunteer">
+        <span class="pill pill-navy" style="align-self:flex-start">3</span>
+        <h2 class="h3">{L(lang, { ko: '실무진 참여', fr: 'Devenir bénévole' })}</h2>
+        <p class="muted small">{L(lang, { ko: '직책과 관계없이 할 수 있는 만큼 함께합니다.', fr: 'Sans mandat, selon vos disponibilités.' })}</p>
+        <div class="checks small">
+          {[{ ko: '회의록 정리', fr: 'Comptes rendus' }, { ko: '홍보·SNS', fr: 'Communication' }, { ko: '행사 준비', fr: 'Événements' }, { ko: '번역(한·불)', fr: 'Traduction' }, { ko: '관계기관 연락', fr: 'Relations institutionnelles' }, { ko: '웹사이트', fr: 'Site web' }].map((x) => <span class="pill pill-gray">{L(lang, x)}</span>)}
+        </div>
+        <a class="btn btn-ghost" style="align-self:flex-start" href={href(lang, 'contact/?type=volunteer')}>{L(lang, { ko: '참여 의사 보내기', fr: 'Je me propose' })}</a>
+      </article>
+
+      <article class="card card-pad stack gap-12" id="partners">
+        <span class="pill pill-navy" style="align-self:flex-start">4</span>
+        <h2 class="h3">{L(lang, { ko: '협력·후원 제안', fr: 'Partenariats' })}</h2>
+        <p class="muted small">{L(lang, { ko: '한인 단체, 기업, 기관의 행사 협력과 후원 제안을 받습니다. 후원금의 세제 혜택 여부는 협회 자격 확인 후 안내합니다.', fr: 'Associations, entreprises, institutions : nous étudions vos propositions de partenariat. L’éligibilité à la réduction d’impôt reste à vérifier.' })}</p>
+        <a class="btn btn-ghost" style="align-self:flex-start" href={href(lang, 'contact/?type=partner')}>{L(lang, { ko: '제안하기', fr: 'Nous contacter' })}</a>
+      </article>
+    </div>
+  </section>
+
+  <section class="band" id="newsletter">
+    <div class="wrap sec split">
+      <div class="side">
+        <span class="eyebrow">{L(lang, { ko: '소식지', fr: 'Lettre d’information' })}</span>
+        <h2 class="h2">{L(lang, { ko: '소식지 구독', fr: 'Recevoir nos nouvelles' })}</h2>
+        <p class="lead">{L(lang, { ko: '입학 일정과 협회 소식을 이메일로 받아 보세요. 학부모가 아니어도 구독할 수 있고, 언제든 해지할 수 있습니다.', fr: 'Admissions, actualités : recevez nos informations par e-mail. Ouvert à tous, désinscription à tout moment.' })}</p>
+      </div>
+      <form class="main card card-pad form" data-public-form="subscribers" novalidate>
+        <label class="field">{L(lang, { ko: '이메일', fr: 'E-mail' })}<input name="email" type="email" autocomplete="email" required></label>
+        <label class="field">{L(lang, { ko: '받을 언어', fr: 'Langue' })}
+          <select name="lang"><option value="ko" selected={lang === 'ko'}>한국어</option><option value="fr" selected={lang === 'fr'}>Français</option><option value="both">한국어 + Français</option></select>
+        </label>
+        <label class="check full"><input type="checkbox" name="consent" required>{L(lang, { ko: '소식지 발송을 위한 이메일 수집에 동의합니다.', fr: 'J’accepte de recevoir la lettre d’information.' })}</label>
+        <input class="hp" name="website" tabindex="-1" autocomplete="off" aria-hidden="true">
+        <div class="full row gap-16"><button class="btn btn-dark" type="submit">{L(lang, { ko: '구독하기', fr: 'S’abonner' })}</button><span class="err" data-form-msg role="status"></span></div>
+      </form>
+    </div>
+  </section>
+  <script>import '../../scripts/public-forms';</script>
+</Base>

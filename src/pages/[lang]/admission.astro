@@ -1,0 +1,103 @@
+---
+import Base from '../../layouts/Base.astro';
+import PageHero from '../../components/PageHero.astro';
+import Sources from '../../components/Sources.astro';
+import { langPaths, href, L, type Lang } from '../../i18n/ui';
+import { FAQ, PROFILES, EXPECTED, CAMPAIGN, WAVE2, ADMISSION_NOTES, ADMISSION_CONTACTS, NEXT_YEAR } from '../../data/site';
+
+export const getStaticPaths = langPaths;
+const lang = Astro.params.lang as Lang;
+const toc = [
+  ['who', { ko: '지원 자격', fr: 'Qui peut candidater' }],
+  ['steps', { ko: '모집 절차와 일정', fr: 'Procédure et calendrier' }],
+  ['notes', { ko: '꼭 알아 둘 점', fr: 'À savoir' }],
+  ['contacts', { ko: '공식 문의처', fr: 'Contacts officiels' }],
+  ['session', { ko: '설명회 사전 신청', fr: 'Réunion d’information' }],
+  ['faq', { ko: '자주 묻는 질문', fr: 'FAQ' }],
+] as const;
+---
+<Base lang={lang} rest="admission/" title={L(lang, { ko: '입학 안내', fr: 'Admissions' })}>
+  <PageHero lang={lang} eyebrow={L(lang, { ko: '입학 안내', fr: 'Admissions' })}
+    title={L(lang, { ko: `${NEXT_YEAR.ko} 입학 안내`, fr: `Admissions, ${NEXT_YEAR.fr}` })}
+    intro={L(lang, { ko: '입학은 베르사유 교육청이 결정하며, 원서는 교육청 누리집에서 받습니다. 아래 내용은 쿠르브부아 시청과 교육청이 지난해 공고한 절차를 정리한 것으로, 올해 공고가 나오면 날짜를 갱신합니다.', fr: 'Les admissions relèvent de l’académie de Versailles. Synthèse de la procédure publiée l’an dernier par la mairie et l’académie ; les dates seront mises à jour.' })}>
+    <div class="row gap-12" style="margin-top:6px">
+      <a class="btn btn-accent" href="https://www.ac-versailles.fr/si92" rel="noopener">{L(lang, { ko: '교육청 원서 받기', fr: 'Dossiers sur le site de l’académie' })} ↗</a>
+      <a class="btn btn-light" href="#session">{L(lang, { ko: '설명회 사전 신청', fr: 'Réunion d’information' })}</a>
+    </div>
+  </PageHero>
+
+  <div class="wrap sec with-aside">
+    <aside><nav class="toc">{toc.map(([id, l]) => <a href={`#${id}`}>{L(lang, l)}</a>)}</nav></aside>
+    <div class="content stack" style="gap:64px">
+
+      <section id="who" class="stack gap-16">
+        <h2 class="h2">{L(lang, toc[0][1])}</h2>
+        <div class="grid g-3">
+          {PROFILES.map((p) => <div class="card feature"><h3 class="h3" style="font-size:17px">{L(lang, p.title)}</h3><p>{L(lang, p.text)}</p></div>)}
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>{L(lang, { ko: '시점', fr: 'Moment' })}</th><th>{L(lang, { ko: '기대 한국어 수준 (CECRL)', fr: 'Niveau attendu (CECRL)' })}</th></tr></thead>
+            <tbody>{EXPECTED.map((e) => <tr><td>{L(lang, e.when)}</td><td><b>{L(lang, e.level)}</b></td></tr>)}</tbody>
+          </table>
+        </div>
+      </section>
+
+      <section id="steps" class="stack gap-16">
+        <h2 class="h2">{L(lang, toc[1][1])}</h2>
+        <h3 class="h3">{L(lang, { ko: '1차 모집', fr: '1re vague' })}</h3>
+        <ol class="steps card" style="padding:0 24px">
+          {CAMPAIGN.map((c) => <li><span class="when">{L(lang, c.when)}</span><div class="what"><b>{L(lang, c.what)}</b><span>{L(lang, c.detail)}</span></div></li>)}
+        </ol>
+        <h3 class="h3" style="margin-top:12px">{L(lang, { ko: '2차 모집 (늦게 귀국·이주하는 가정)', fr: '2e vague (arrivées tardives)' })}</h3>
+        <p class="card card-pad muted">{L(lang, WAVE2)}</p>
+        <p class="notice notice-info">{L(lang, { ko: '중학교(Collège Les Bruyères) 지원서는 교육청 누리집에 별도로 올라오며, 세부 사항은 학교에 직접 문의합니다.', fr: 'Pour le collège Les Bruyères, le dossier est publié séparément sur le site de l’académie ; renseignements auprès de l’établissement.' })}</p>
+      </section>
+
+      <section id="notes" class="stack gap-16">
+        <h2 class="h2">{L(lang, toc[2][1])}</h2>
+        <ul class="prose">{ADMISSION_NOTES.map((n) => <li>{L(lang, n)}</li>)}</ul>
+      </section>
+
+      <section id="contacts" class="stack gap-16">
+        <h2 class="h2">{L(lang, toc[3][1])}</h2>
+        <div class="card card-pad">
+          {ADMISSION_CONTACTS.map((c) => <div class="kv"><span class="muted">{L(lang, c.label)}</span>{c.href ? <a href={c.href} rel="noopener">{c.value}</a> : <span>{c.value}</span>}</div>)}
+        </div>
+        <p class="tiny">{L(lang, { ko: '협회는 공식 접수 창구가 아닙니다. 원서 제출과 결과 문의는 교육청이나 학교로 해 주세요.', fr: 'L’association n’est pas un guichet officiel : candidatures et résultats relèvent de l’académie et des établissements.' })}</p>
+      </section>
+
+      <section id="session" class="stack gap-16">
+        <h2 class="h2">{L(lang, toc[4][1])}</h2>
+        <p class="muted">{L(lang, { ko: '주프랑스 한국교육원이 보통 11월 말~12월 초에 입학설명회를 엽니다. 연락처를 남기시면 일정이 정해지는 대로 알려 드립니다. 입력한 정보는 설명회 안내에만 씁니다.', fr: 'Le Centre éducatif coréen organise en général une réunion fin novembre ou début décembre. Laissez vos coordonnées pour être prévenu(e).' })}</p>
+        <form class="card card-pad form" data-public-form="registrations" novalidate>
+          <label class="field">{L(lang, { ko: '보호자 이름', fr: 'Nom du parent' })}<input name="name" autocomplete="name" required></label>
+          <label class="field">{L(lang, { ko: '이메일', fr: 'E-mail' })}<input name="email" type="email" autocomplete="email" required></label>
+          <fieldset class="field full" style="border:0;padding:0;margin:0">
+            <legend style="margin-bottom:8px">{L(lang, { ko: '관심 학교급', fr: 'Niveau envisagé' })}</legend>
+            <div class="checks">
+              <label class="check"><input type="checkbox" name="levels" value="mat">{L(lang, { ko: '유치원', fr: 'Maternelle' })}</label>
+              <label class="check"><input type="checkbox" name="levels" value="elem">{L(lang, { ko: '초등학교', fr: 'Élémentaire' })}</label>
+              <label class="check"><input type="checkbox" name="levels" value="col">{L(lang, { ko: '중학교', fr: 'Collège' })}</label>
+            </div>
+          </fieldset>
+          <label class="field full">{L(lang, { ko: '궁금한 점 (선택)', fr: 'Vos questions (facultatif)' })}<textarea name="message" rows="3"></textarea></label>
+          <label class="check full"><input type="checkbox" name="consent" required>{L(lang, { ko: '설명회 안내를 위한 개인정보 수집에 동의합니다.', fr: 'J’accepte que mes données soient utilisées pour cette information.' })}</label>
+          <input class="hp" name="website" tabindex="-1" autocomplete="off" aria-hidden="true">
+          <div class="full row gap-16"><button class="btn btn-dark" type="submit">{L(lang, { ko: '신청하기', fr: 'Envoyer' })}</button><span class="err" data-form-msg role="status"></span></div>
+        </form>
+      </section>
+
+      <section id="faq" class="stack gap-16">
+        <h2 class="h2">{L(lang, toc[5][1])}</h2>
+        <div class="faq">
+          {FAQ.map((f) => <details><summary>{L(lang, f.q)}</summary><div class="ans">{L(lang, f.a)}</div></details>)}
+        </div>
+        <p class="small muted">{L(lang, { ko: '학교생활이 궁금하시면', fr: 'Des questions sur la vie de la section ?' })} <a href={href(lang, 'contact/')}>{L(lang, { ko: '협회에 문의하기', fr: 'Écrivez-nous' })}</a></p>
+      </section>
+
+      <Sources lang={lang} />
+    </div>
+  </div>
+  <script>import '../../scripts/public-forms';</script>
+</Base>

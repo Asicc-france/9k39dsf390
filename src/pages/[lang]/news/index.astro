@@ -1,0 +1,53 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../../../layouts/Base.astro';
+import PageHero from '../../../components/PageHero.astro';
+import NewsCard from '../../../components/NewsCard.astro';
+import { langPaths, L, type Lang } from '../../../i18n/ui';
+import { CATS } from '../../../data/news';
+
+export const getStaticPaths = langPaths;
+const lang = Astro.params.lang as Lang;
+const items = (await getCollection('news', (e) => e.id.startsWith(`${lang}/`) && !e.data.draft))
+  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+---
+<Base lang={lang} rest="news/" title={L(lang, { ko: '소식', fr: 'Actualités' })}>
+  <PageHero lang={lang} eyebrow={L(lang, { ko: '소식·활동', fr: 'Actualités' })}
+    title={L(lang, { ko: '협회 소식', fr: 'La vie de l’association' })}
+    intro={L(lang, { ko: '공지, 행사, 대외활동, 언론 보도와 기고문을 모았습니다.', fr: 'Annonces, événements, relations institutionnelles, presse et tribunes.' })} />
+  <section class="wrap sec">
+    <div class="row between gap-16" style="margin-bottom:24px">
+      <div class="filters" role="group" aria-label={L(lang, { ko: '분류', fr: 'Catégories' })}>
+        <button class="chip" type="button" data-cat="all" aria-pressed="true">{L(lang, { ko: '전체', fr: 'Tout' })}</button>
+        {Object.entries(CATS).map(([k, c]) => <button class="chip" type="button" data-cat={k} aria-pressed="false">{c[lang]}</button>)}
+      </div>
+      <label class="search">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+        <span class="sr-only">{L(lang, { ko: '검색', fr: 'Rechercher' })}</span>
+        <input type="search" id="q" placeholder={L(lang, { ko: '소식 검색', fr: 'Rechercher' })}>
+      </label>
+    </div>
+    <div class="grid g-3" id="list">
+      {items.map((n) => <NewsCard lang={lang} entry={n} />)}
+    </div>
+    <p class="empty" id="none" hidden>{L(lang, { ko: '조건에 맞는 소식이 없습니다.', fr: 'Aucun résultat.' })}</p>
+  </section>
+  <script>
+    const chips = document.querySelectorAll<HTMLButtonElement>('[data-cat].chip');
+    const cards = document.querySelectorAll<HTMLElement>('#list [data-cat]');
+    const q = document.getElementById('q') as HTMLInputElement;
+    let cat = 'all';
+    const apply = () => {
+      const term = q.value.trim().toLowerCase(); let n = 0;
+      cards.forEach((c) => {
+        const ok = (cat === 'all' || c.dataset.cat === cat) && (!term || c.dataset.search!.includes(term));
+        c.hidden = !ok; if (ok) n++;
+      });
+      document.getElementById('none')!.hidden = n > 0;
+    };
+    chips.forEach((b) => b.addEventListener('click', () => {
+      cat = b.dataset.cat!; chips.forEach((x) => x.setAttribute('aria-pressed', String(x === b))); apply();
+    }));
+    q.addEventListener('input', apply);
+  </script>
+</Base>

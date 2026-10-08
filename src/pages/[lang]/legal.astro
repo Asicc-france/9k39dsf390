@@ -1,0 +1,51 @@
+---
+import Base from '../../layouts/Base.astro';
+import PageHero from '../../components/PageHero.astro';
+import { langPaths, L, type Lang } from '../../i18n/ui';
+
+export const getStaticPaths = langPaths;
+const lang = Astro.params.lang as Lang;
+const ko = lang === 'ko';
+---
+<Base lang={lang} rest="legal/" title={L(lang, { ko: '법적 고지와 개인정보 처리방침', fr: 'Mentions légales et confidentialité' })}>
+  <PageHero lang={lang} eyebrow={L(lang, { ko: '법적 고지', fr: 'Mentions légales' })}
+    title={L(lang, { ko: '법적 고지와 개인정보 처리방침', fr: 'Mentions légales et politique de confidentialité' })}
+    intro={L(lang, { ko: '프랑스 법에 따른 고지입니다. 법적 효력은 프랑스어판을 기준으로 합니다.', fr: 'Informations légales et protection des données personnelles (RGPD).' })} />
+  <div class="wrap sec">
+    <div class="prose">
+      <h2 id="mentions">{ko ? '사이트 운영자' : 'Éditeur du site'}</h2>
+      <ul>
+        <li>Association de la Section Internationale Coréenne à Courbevoie (ASICC), {ko ? '1901년 법에 따른 비영리 협회, 2026년 4월 28일 신고' : 'association loi 1901 déclarée le 28 avril 2026'}</li>
+        <li>{ko ? '소재지' : 'Siège'} : <span class="placeholder">[adresse]</span> · RNA : <span class="placeholder">[W92…]</span></li>
+        <li>{ko ? '발행 책임자' : 'Directrice de la publication'} : {ko ? '협회장' : 'la présidente de l’association'}</li>
+        <li>{ko ? '연락처' : 'Contact'} : <span class="placeholder">contact@[domaine]</span></li>
+      </ul>
+      <h2>{ko ? '호스팅' : 'Hébergement'}</h2>
+      <p>Google Firebase Hosting · Google Ireland Limited, Gordon House, Barrow Street, Dublin 4, {ko ? '아일랜드' : 'Irlande'}.</p>
+
+      <h2 id="privacy">{ko ? '개인정보 처리방침' : 'Politique de confidentialité'}</h2>
+      <h3>{ko ? '수집하는 정보와 목적' : 'Données collectées et finalités'}</h3>
+      <ul>
+        <li><b>{ko ? '회원 계정' : 'Compte membre'}</b> : {ko ? '이름, 이메일, 자녀 학교급, 전화번호(선택), 이미지 게시 동의 여부. 회원 영역 접근과 협회 운영에 사용합니다.' : 'nom, e-mail, niveau(x) des enfants, téléphone (facultatif), accord de publication d’images. Finalité : accès à l’espace membres et vie de l’association.'}</li>
+        <li><b>{ko ? '문의·설명회 신청' : 'Contact et réunion d’information'}</b> : {ko ? '이름, 이메일, 문의 내용. 답변과 안내에만 사용합니다.' : 'nom, e-mail, message. Finalité : vous répondre.'}</li>
+        <li><b>{ko ? '소식지' : 'Lettre d’information'}</b> : {ko ? '이메일, 선호 언어. 소식지 발송에만 사용합니다.' : 'e-mail, langue. Finalité : envoi de la lettre.'}</li>
+      </ul>
+      <h3>{ko ? '법적 근거' : 'Base légale'}</h3>
+      <p>{ko ? '동의(소식지, 이미지 게시, 문의) 및 협회 운영상의 정당한 이익(회원 관리).' : 'Consentement (lettre, images, contact) et intérêt légitime de l’association (gestion des membres).'}</p>
+      <h3>{ko ? '보관 기간' : 'Durée de conservation'}</h3>
+      <ul>
+        <li>{ko ? '회원 계정: 자녀가 국제섹션을 떠난 뒤 1년까지' : 'Compte membre : jusqu’à un an après le départ de l’enfant de la section'}</li>
+        <li>{ko ? '문의와 설명회 신청: 1년' : 'Demandes de contact : un an'}</li>
+        <li>{ko ? '소식지: 구독 해지 시까지' : 'Lettre d’information : jusqu’à la désinscription'}</li>
+      </ul>
+      <h3>{ko ? '아동 이미지' : 'Images des enfants'}</h3>
+      <p>{ko ? '아이들의 사진과 작품은 보호자의 동의를 받은 경우에만 회원 영역에 게시하며, 이름 대신 학년만 표시합니다. 공개 페이지에는 아이를 알아볼 수 있는 사진을 게시하지 않습니다.' : 'Les photos et créations des enfants ne sont publiées que dans l’espace membres, avec l’accord des responsables légaux, sans nom (classe uniquement). Aucune photo permettant d’identifier un enfant n’est publiée sur les pages publiques.'}</p>
+      <h3>{ko ? '수탁 처리자' : 'Sous-traitant'}</h3>
+      <p>{ko ? '계정과 데이터는 Google Firebase(유럽 리전)에 저장합니다.' : 'Les comptes et données sont hébergés par Google Firebase (région européenne).'}</p>
+      <h3>{ko ? '정보 주체의 권리' : 'Vos droits'}</h3>
+      <p>{ko ? '열람, 정정, 삭제, 처리 제한, 이동, 동의 철회를 요청할 수 있습니다. 회원은 "내 계정"에서 직접 정보를 수정하거나 탈퇴할 수 있으며, 그 밖의 요청은 협회 이메일로 보내 주세요. 프랑스 개인정보 감독기관(CNIL)에 민원을 제기할 수도 있습니다.' : 'Vous disposez d’un droit d’accès, de rectification, d’effacement, de limitation, de portabilité et de retrait du consentement. Les membres peuvent modifier ou supprimer leur compte depuis « Mon compte » ; pour toute autre demande, écrivez-nous. Vous pouvez saisir la CNIL.'}</p>
+      <h3>{ko ? '쿠키' : 'Cookies'}</h3>
+      <p>{ko ? '이 사이트는 광고나 방문 분석 쿠키를 쓰지 않습니다. 로그인 상태 유지와 언어 선택 기억에 필요한 저장소만 사용합니다.' : 'Ce site n’utilise ni cookies publicitaires ni mesure d’audience. Seuls les stockages nécessaires à la connexion et au choix de langue sont utilisés.'}</p>
+    </div>
+  </div>
+</Base>

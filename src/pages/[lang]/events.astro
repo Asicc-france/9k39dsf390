@@ -1,0 +1,52 @@
+---
+import Base from '../../layouts/Base.astro';
+import PageHero from '../../components/PageHero.astro';
+import { langPaths, L, type Lang } from '../../i18n/ui';
+import { EVENTS } from '../../data/site';
+
+export const getStaticPaths = langPaths;
+const lang = Astro.params.lang as Lang;
+const loc = lang === 'ko' ? 'ko-KR' : 'fr-FR';
+const KIND = {
+  info: { ko: '입학', fr: 'Admissions', pill: 'pill-accent' },
+  asso: { ko: '협회', fr: 'Association', pill: 'pill-navy' },
+  school: { ko: '학교 행사', fr: 'École', pill: 'pill-olive' },
+} as const;
+const byMonth = new Map<string, typeof EVENTS>();
+for (const e of [...EVENTS].sort((a, b) => a.date.localeCompare(b.date))) {
+  const k = new Date(e.date).toLocaleDateString(loc, { year: 'numeric', month: 'long' });
+  byMonth.set(k, [...(byMonth.get(k) ?? []), e]);
+}
+---
+<Base lang={lang} rest="events/" title={L(lang, { ko: '행사 일정', fr: 'Agenda' })}>
+  <PageHero lang={lang} eyebrow={L(lang, { ko: '행사', fr: 'Agenda' })}
+    title={L(lang, { ko: '행사 일정', fr: 'Les prochains rendez-vous' })}
+    intro={L(lang, { ko: '학교 행사, 협회 일정, 입학 관련 일정을 한곳에 모았습니다. 캘린더를 구독하면 휴대전화 달력에 자동으로 반영됩니다.', fr: 'Événements des écoles, de l’association et des admissions. Abonnez-vous au calendrier pour le retrouver sur votre téléphone.' })}>
+    <div class="row gap-12" style="margin-top:8px">
+      <a class="btn btn-accent" href="#" data-placeholder>{L(lang, { ko: '구글 캘린더 구독', fr: 'S’abonner (Google Agenda)' })}</a>
+      <a class="btn btn-light" href="#" data-placeholder>{L(lang, { ko: 'iCal 주소 복사', fr: 'Copier le lien iCal' })}</a>
+    </div>
+  </PageHero>
+  <section class="wrap sec" style="max-width:880px">
+    {[...byMonth.entries()].map(([month, list]) => (
+      <>
+        <h2 class="month">{month}</h2>
+        {list.map((e) => {
+          const d = new Date(e.date);
+          return (
+            <article class="card event">
+              <div class="datebox"><b>{d.getDate()}</b><span>{d.toLocaleDateString(loc, { weekday: 'short' })}</span></div>
+              <div class="info">
+                <div class="row gap-8"><span class={`pill ${KIND[e.kind].pill}`}>{KIND[e.kind][lang]}</span>{e.tentative && <span class="pill pill-warn">{L(lang, { ko: '예정', fr: 'À confirmer' })}</span>}</div>
+                <h3 class="h3" style="font-size:17px">{L(lang, e.title)}</h3>
+                <span class="tiny"><span>{L(lang, e.place)}</span>{e.time && <span>{L(lang, e.time)}</span>}</span>
+                {e.desc && <p class="small muted">{L(lang, e.desc)}</p>}
+              </div>
+            </article>
+          );
+        })}
+      </>
+    ))}
+    <p class="notice notice-info" style="margin-top:32px">{L(lang, { ko: '일정은 협회 구글 캘린더 한 곳에서 관리하고, 이 페이지는 그 캘린더를 보여 주는 방식으로 운영할 수 있습니다 (운영 안내서 참고).', fr: 'L’agenda peut être tenu dans un seul Google Agenda de l’association, affiché sur cette page.' })}</p>
+  </section>
+</Base>

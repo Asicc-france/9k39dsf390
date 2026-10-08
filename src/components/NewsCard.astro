@@ -1,0 +1,14 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import { href, formatDate, type Lang } from '../i18n/ui';
+import { CATS } from '../data/news';
+interface Props { lang: Lang; entry: CollectionEntry<'news'> }
+const { lang, entry } = Astro.props;
+const slug = entry.id.split('/')[1];
+const c = CATS[entry.data.category];
+---
+<a class="card card-link news-card" href={href(lang, `news/${slug}/`)} data-cat={entry.data.category} data-search={`${entry.data.title} ${entry.data.summary}`.toLowerCase()}>
+  <div class="meta"><span class={`pill ${c.pill}`}>{c[lang]}</span><time datetime={entry.data.date.toISOString().slice(0, 10)}>{formatDate(lang, entry.data.date)}</time></div>
+  <h3>{entry.data.title}</h3>
+  <p>{entry.data.summary}</p>
+</a>

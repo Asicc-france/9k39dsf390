@@ -1,0 +1,94 @@
+---
+import Base from '../../layouts/Base.astro';
+import PageHero from '../../components/PageHero.astro';
+import { langPaths, href, L, type Lang } from '../../i18n/ui';
+import { BUREAU, HISTORY, PARTNERS, AXES } from '../../data/site';
+
+export const getStaticPaths = langPaths;
+const lang = Astro.params.lang as Lang;
+const toc = [
+  ['mission', { ko: '활동의 네 가지 축', fr: 'Nos quatre axes' }],
+  ['greeting', { ko: '회장 인사말', fr: 'Mot de la présidente' }],
+  ['history', { ko: '연혁', fr: 'Historique' }],
+  ['bureau', { ko: '운영진', fr: 'Le bureau' }],
+  ['structure', { ko: '기관 구조', fr: 'Qui fait quoi' }],
+  ['statuts', { ko: '정관과 운영 원칙', fr: 'Statuts et principes' }],
+] as const;
+---
+<Base lang={lang} rest="about/" title={L(lang, { ko: '협회 소개', fr: 'L’association' })}>
+  <PageHero lang={lang} eyebrow={L(lang, { ko: '협회 소개', fr: 'L’association' })}
+    title={L(lang, { ko: '학부모의 목소리를 하나로 모아 전달합니다', fr: 'Porter d’une seule voix la parole des parents' })}
+    intro={L(lang, { ko: 'ASICC는 쿠르브부아 한국어 국제섹션에 자녀를 보내는 학부모들이 2026년 설립한 비영리 협회입니다.', fr: 'L’ASICC est l’association à but non lucratif fondée en 2026 par les parents d’élèves de la section internationale coréenne de Courbevoie.' })} />
+
+  <div class="wrap sec with-aside">
+    <aside><nav class="toc" aria-label={L(lang, { ko: '목차', fr: 'Sommaire' })}>{toc.map(([id, l]) => <a href={`#${id}`}>{L(lang, l)}</a>)}</nav></aside>
+    <div class="content stack" style="gap:72px">
+
+      <section id="mission" class="stack gap-24">
+        <h2 class="h2">{L(lang, toc[0][1])}</h2>
+        <p class="lead" style="font-size:16px">{L(lang, { ko: '약 9년 동안 학부모들이 자발적으로 이어 온 활동을 바탕으로, 학교와 관계기관에 학부모 의견을 공식적으로 전하기 위해 2026년 협회를 설립했습니다. 국제섹션에 자녀를 둔 학부모는 정관에 따라 모두 회원입니다.', fr: 'Fondée en 2026 à partir de près de neuf années d’engagement bénévole, l’association porte officiellement la voix des parents. Tous les parents d’élèves de la section en sont membres.' })}</p>
+        <div class="grid g-2">
+          {AXES.map((x) => (
+            <div class="card feature">
+              <span class="tag">{L(lang, x.tag)}</span>
+              <h3 class="h3">{L(lang, x.title)}</h3>
+              <ul class="small" style="padding-left:1.2em;color:var(--ink-3);display:grid;gap:2px">{x.items.map((i) => <li>{L(lang, i)}</li>)}</ul>
+              <p class="tiny" style="margin-top:4px">→ {L(lang, x.result)}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section id="greeting" class="stack gap-16">
+        <h2 class="h2">{L(lang, toc[1][1])}</h2>
+        <div class="card card-pad prose" style="max-width:none">
+          <p class="placeholder">{L(lang, { ko: '[회장 인사말 원고 확정 후 게재]', fr: '[Mot de la présidente, à compléter]' })}</p>
+          <p class="tiny">{L(lang, { ko: 'ASICC 회장', fr: 'Présidente de l’ASICC' })}</p>
+        </div>
+      </section>
+
+      <section id="history" class="stack gap-24">
+        <h2 class="h2">{L(lang, toc[2][1])}</h2>
+        <ol class="history">
+          {HISTORY.map((h) => <li><time>{L(lang, h.date)}</time><b>{L(lang, h.title)}</b><p>{L(lang, h.text)}</p></li>)}
+        </ol>
+      </section>
+
+      <section id="bureau" class="stack gap-24">
+        <div class="stack gap-8">
+          <h2 class="h2">{L(lang, toc[3][1])}</h2>
+          <p class="muted">{L(lang, { ko: '2026–2027 · 임기 2년', fr: '2026–2027 · mandat de deux ans' })}</p>
+        </div>
+        <div class="grid g-4">
+          {BUREAU.map((b) => <div class="card card-pad stack gap-8"><span class="tiny">{L(lang, b.role)}</span><b style="font-size:17px">{b.name}</b></div>)}
+        </div>
+      </section>
+
+      <section id="structure" class="stack gap-24">
+        <div class="stack gap-8">
+          <h2 class="h2">{L(lang, toc[4][1])}</h2>
+          <p class="muted">{L(lang, { ko: '국제섹션은 한국과 프랑스 기관이 역할을 나누어 운영합니다.', fr: 'La section repose sur un partage des rôles entre institutions coréennes et françaises.' })}</p>
+        </div>
+        <div class="partners">
+          {PARTNERS.map((p) => <div class="card partner"><b>{L(lang, p.name)}</b><span class="tiny">{L(lang, p.role)}</span></div>)}
+        </div>
+      </section>
+
+      <section id="statuts" class="stack gap-16">
+        <h2 class="h2">{L(lang, toc[5][1])}</h2>
+        <div class="prose">
+          <p>{L(lang, {
+            ko: '협회는 1901년 법에 따른 비영리 협회입니다. 국제섹션에 자녀를 둔 학부모는 정관에 따라 회원이 되며, 연회비(가정당 연 20유로)는 자율 납부입니다.',
+            fr: 'L’association relève de la loi de 1901. Les parents d’élèves de la section en sont membres conformément aux statuts ; la cotisation (20 € par famille et par an) est libre.' })}</p>
+          <p>{L(lang, {
+            ko: '협회의 공식 입장은 운영진 논의와 총회 의결을 거쳐 정합니다. 정기총회는 해마다 1~2회 열고, 평소에는 카카오톡과 수요일 학부모 카페 모임에서 의견을 나눕니다. 회의록과 내부 자료는 회원 영역에서 공유하며, 외부 전달은 협회장을 통해 이루어집니다.',
+            fr: 'Les positions officielles sont arrêtées par le bureau et l’assemblée générale, réunie une à deux fois par an ; au quotidien, les échanges passent par KakaoTalk et le café des parents du mercredi. Les comptes rendus sont partagés dans l’espace membres ; toute diffusion externe passe par la présidente.' })}</p>
+        </div>
+        <div class="row gap-12">
+          <a class="btn btn-ghost" href="#" aria-disabled="true">{L(lang, { ko: '정관 내려받기 (PDF)', fr: 'Télécharger les statuts (PDF)' })}</a>
+          <a class="btn btn-ghost" href={href(lang, 'membres/')}>{L(lang, { ko: '회의록은 회원 자료실에서', fr: 'Comptes rendus : espace membres' })}</a>
+        </div>
+      </section>
+    </div>
+  </div>
+</Base>

@@ -1,0 +1,17 @@
+---
+import { href, type Lang } from '../i18n/ui';
+interface Props { lang: Lang; eyebrow: string; title: string; intro?: string; crumb?: { label: string; path: string } }
+const { lang, eyebrow, title, intro, crumb } = Astro.props;
+---
+<section class="page-hero">
+  <div class="wrap">
+    <nav class="crumbs" aria-label="breadcrumb">
+      <a href={href(lang)}>{lang === 'ko' ? '홈' : 'Accueil'}</a>
+      {crumb && <> · <a href={href(lang, crumb.path)}>{crumb.label}</a></>}
+    </nav>
+    <span class="eyebrow">{eyebrow}</span>
+    <h1 class="h1">{title}</h1>
+    {intro && <p>{intro}</p>}
+    <slot />
+  </div>
+</section>
